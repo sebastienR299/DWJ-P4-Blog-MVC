@@ -6,7 +6,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping\{Column,Entity,Id,ManyToOne,OneToMany};
 
 /**
- * @Entity(repositoryClass="ArticleRepository")
+ * @Entity
  * @Table(name="article")
  */
 class Article
