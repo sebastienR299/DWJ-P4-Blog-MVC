@@ -35,6 +35,18 @@ class Router
                     $this->controller->addComment($_GET['id'], $_POST['content']);
                 break;
 
+                case "connexion" :
+                    $this->controller->login();
+                break;
+
+                case "inscription" : 
+                    $this->controller->getInscription();
+                break;
+
+                case "register" : 
+                    $this->controller->register();
+                break;
+
                 case "error404" :
                     header('HTTP/1.0 404 not found');
                 break;

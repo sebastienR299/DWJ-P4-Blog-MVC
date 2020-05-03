@@ -1,0 +1,39 @@
+{% extends 'template.front.twig' %}
+
+{% block title %}<title>Inscription</title>{% endblock %}
+
+{% block content %}
+
+<form method="post" action="?p=register" class="mx-auto col-4 mt-5" autocomplete="off">
+    <div class="form-group">
+        <label for="firstName" class="ml-4">Prénom</label>
+        <input required type="text" class="form-control form-control-lg rounded-pill" name="firstName" id="firstName" aria-describedby="firstNameHelp">
+    </div>
+    <div class="form-group">
+        <label for="lastName" class="ml-4">Nom</label>
+        <input required  type="text" class="form-control form-control-lg rounded-pill" name="lastName" id="lastName" aria-describedby="LastNameHelp">
+    </div>
+    <div class="form-group">
+        <label for="email" class="ml-4">Email</label>
+        <input required  type="email" class="form-control form-control-lg rounded-pill" name="email" id="email" aria-describedby="emailHelp">
+    </div>
+    <div class="form-group">
+        <label for="password" class="ml-4">Mot de passe</label>
+        <input required  type="password" class="form-control form-control-lg rounded-pill" name="password" id="password">
+    </div>
+    <div class="form-group">
+        <label for="passwordRepeat" class="ml-4">Mot de passe</label>
+        <input required  type="password" class="form-control form-control-lg rounded-pill" name="passwordRepeat" id="passwordRepeat">
+    </div>
+    <button type="submit" class="btn btn-primary btn-lg d-block mx-auto mt-4 rounded-pill">Inscription</button>
+</form>
+
+{% if returnMessage is defined %}
+
+    <div class="alert alert-{{colorMessage}} col-6 rounded-pill text-center mx-auto mt-5" role="alert">
+        {{returnMessage}}
+    </div>
+
+{% endif %}
+
+{% endblock %}

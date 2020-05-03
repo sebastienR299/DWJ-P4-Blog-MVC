@@ -27,6 +27,81 @@ class Controller
         $this->pictureRepository = $this->entityManager->getRepository(Picture::class);
     }
 
+    public function login()
+    {
+        require (dirname(__DIR__, 2).'/config/twig-config.php');
+        echo $twig->render('connexion.front.twig');
+    }
+
+    public function getInscription()
+    {
+        require (dirname(__DIR__, 2).'/config/twig-config.php');
+        echo $twig->render('inscription.front.twig');
+    }
+
+    public function register()
+    {
+        require (dirname(__DIR__, 2).'/config/twig-config.php');
+        $users = $this->userRepository->findAll();
+        $alreadyExist = false;
+
+        if (!empty($_POST['firstName']) && !empty($_POST['lastName']) && !empty($_POST['email']) && !empty($_POST['password']))
+        {
+            if ($_POST['password'] === $_POST['passwordRepeat'])
+            {
+                foreach($users as $user)
+                {
+                    if ($_POST['email'] === $user->getEmail())
+                    {
+                        $alreadyExist = true;
+                        $returnMessage = 'Désolé cette adresse e-mail est déjà utilisée';
+                        $colorMessage = 'danger';
+                        echo $twig->render('inscription.front.twig', [
+                            'returnMessage' => $returnMessage,
+                            'colorMessage' => $colorMessage
+                        ]);
+                    }
+                    elseif ($alreadyExist === true)
+                    {
+                        $user = new User();
+                        $user->setFirstName($_POST['firstName']);
+                        $user->setLastName($_POST['lastName']);
+                        $user->setEmail($_POST['email']);
+                        $user->setPassword(password_hash($_POST['password'], PASSWORD_DEFAULT));
+                        $user->setAdmin(0);
+                        $this->entityManager->persist($user);
+                        $this->entityManager->flush();
+
+                        $returnMessage = 'Vous êtes désormais inscrit ! Vous pouvez vous connecter';
+                        $colorMessage = 'success';
+                        echo $twig->render('home.front.twig', [
+                            'returnMessage' => $returnMessage,
+                            'colorMessage' => $colorMessage
+                        ]);
+                    }
+                }
+            }
+            else
+            {
+                $returnMessage = 'Veuillez saisir deux mots de passe identiques';
+                $colorMessage = 'warning';
+                echo $twig->render('inscription.front.twig', [
+                    'returnMessage' => $returnMessage,
+                    'colorMessage' => $colorMessage
+                ]);
+            }
+        }
+        else
+        {
+            $returnMessage = 'Veuillez remplir tout les champs indiqués';
+            $colorMessage = 'warning';
+            echo $twig->render('inscription.front.twig', [
+                'returnMessage' => $returnMessage,
+                'colorMessage' => $colorMessage
+            ]);
+        }
+    }
+
     public function getArticles()
     {
         $articles = $this->articleRepository->findAll();
@@ -40,7 +115,7 @@ class Controller
     public function getArticle($articleId)
     {
         $article = $this->articleRepository->findBy(['id' => $articleId]);
-        $comments= $this->commentRepository->findBy(['id' => $articleId]);
+        $comments = $this->commentRepository->findBy(["article" => "$articleId"]);
 
         require (dirname(__DIR__, 2).'/config/twig-config.php');
         echo $twig->render('article.front.twig', [
@@ -67,7 +142,7 @@ class Controller
             $this->entityManager->flush();
         }
 
-        header('Location: index.php?p=article&id=' . $article->getId());
+        header('Location: ?p=article&id=' . $article->getId());
         
     }
 

@@ -13,13 +13,17 @@
         <h4>{{ row.title }}</h4>
         <p>{{ row.content }}</p>
 
+    <hr class="m-4" />
+
     {% for comment in comments %}
 
-    <p>{{comment.content}}<p>
+    <div class="card">
+    <p class="text-justify p-4">{{comment.content}}<p>
+    </div>
 
     {% endfor %}
 
-    <hr/>
+    <hr class="m-4"/>
 
     <form method="POST" action="?p=addComment&id={{row.id}}">
         <div class="form-group">

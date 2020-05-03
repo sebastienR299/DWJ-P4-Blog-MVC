@@ -15,6 +15,14 @@
 
     {% endfor %}
 
+    {% if returnMessage is defined %}
+
+    <div class="alert alert-{{colorMessage}}" role="alert">
+        {{returnMessage}}
+    </div>
+
+    {% endif %}
+
     </div>
 
 {% endblock %}
