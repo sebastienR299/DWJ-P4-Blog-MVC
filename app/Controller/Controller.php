@@ -6,6 +6,7 @@ use App\Entity\Article;
 use App\Entity\Comment;
 use App\Entity\User;
 use App\Entity\Picture;
+use DateTime;
 
 class Controller
 {
@@ -34,6 +35,40 @@ class Controller
         echo $twig->render('home.front.twig', [
             'articles' => $articles
         ]);
+    }
+
+    public function getArticle($articleId)
+    {
+        $article = $this->articleRepository->findBy(['id' => $articleId]);
+        $comments= $this->commentRepository->findBy(['id' => $articleId]);
+
+        require (dirname(__DIR__, 2).'/config/twig-config.php');
+        echo $twig->render('article.front.twig', [
+            'article' => $article,
+            'comments' => $comments
+        ]);
+    }
+
+    public function addComment($articleId)
+    {
+        $article = $this->articleRepository->find($articleId);
+
+        $comment = new Comment();
+        $comment->setCreatedAt(new DateTime(date('d-m-Y')));
+
+        if (!empty($_POST['content']) && !ctype_space($_POST['content']))
+        {
+            $comment->setContent($_POST['content']);
+            $comment->setReport(0);
+            $comment->setArticle($article);
+            $article->addComment($comment);
+            $this->entityManager->persist($comment);
+            $this->entityManager->persist($article);
+            $this->entityManager->flush();
+        }
+
+        header('Location: index.php?p=article&id=' . $article->getId());
+        
     }
 
 }

@@ -3,6 +3,7 @@
 
 namespace App\config;
 use App\Controller\Controller;
+use Exception;
 
 class Router
 {
@@ -19,15 +20,26 @@ class Router
 
         if (isset($_GET['p']))
         {
+
             switch ($_GET['p'])
             {
-                case "accueil" : 
+                case "home" : 
                     $this->controller->getArticles();
                 break;
 
-                default:
-                // require ('twig-config.php');
-                // echo $twig->render('home.front.twig');
+                case "article" : 
+                    $this->controller->getArticle($_GET['id']);
+                break;
+
+                case "addComment" :
+                    $this->controller->addComment($_GET['id'], $_POST['content']);
+                break;
+
+                case "error404" :
+                    header('HTTP/1.0 404 not found');
+                break;
+
+                default: throw new Exception("La page n'existe pas");
             }
         }
         else

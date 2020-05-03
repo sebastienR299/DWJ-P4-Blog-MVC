@@ -1,0 +1,36 @@
+{% extends 'template.front.twig' %}
+
+{% block content %}
+
+    <div class="container">
+
+        <h1 class="text-center p-4">Publications</h1>
+
+    {% for row in article %}
+
+    {% block title %}<title>{{ row.title }}</title>{% endblock %}
+
+        <h4>{{ row.title }}</h4>
+        <p>{{ row.content }}</p>
+
+    {% for comment in comments %}
+
+    <p>{{comment.content}}<p>
+
+    {% endfor %}
+
+    <hr/>
+
+    <form method="POST" action="?p=addComment&id={{row.id}}">
+        <div class="form-group">
+            <label for="content">Message</label>
+            <textarea class="form-control form-control-lg" id="_content-comment" name="content" rows="5"></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary btn-lg">Ajouter</button>
+    </form>
+
+    </div>
+
+    {% endfor %}
+
+{% endblock %}
