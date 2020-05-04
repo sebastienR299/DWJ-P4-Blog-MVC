@@ -177,7 +177,7 @@ class Controller
     public function getArticle($articleId)
     {
         $article = $this->articleRepository->findBy(['id' => $articleId]);
-        $comments = $this->commentRepository->findBy(["article" => "$articleId"]);
+        $comments = $this->commentRepository->findBy(["article" => $articleId]);
 
         require (dirname(__DIR__, 2).'/config/twig-config.php');
         echo $twig->render('article.front.twig', [
@@ -218,18 +218,23 @@ class Controller
     public function addComment($articleId)
     {
         $article = $this->articleRepository->find($articleId);
-
-        $comment = new Comment();
-        $comment->setCreatedAt(new DateTime(date('d-m-Y')));
+        $user = $this->userRepository->find($_SESSION['id']);
 
         if (!empty($_POST['content']) && !ctype_space($_POST['content']))
         {
+            $comment = new Comment();
+            $comment->setCreatedAt(new DateTime(date('d-m-Y')));
             $comment->setContent($_POST['content']);
+            $comment->setFirstName($_SESSION['firstName']);
+            $comment->setLastName($_SESSION['lastName']);
             $comment->setReport(0);
             $comment->setArticle($article);
             $article->addComment($comment);
+            $user->addComment($comment);
+            $comment->setUser($user);
             $this->entityManager->persist($comment);
             $this->entityManager->persist($article);
+            $this->entityManager->persist($user);
             $this->entityManager->flush();
         }
 

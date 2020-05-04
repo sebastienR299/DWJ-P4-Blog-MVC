@@ -18,7 +18,9 @@
     {% for comment in comments %}
 
     <div class="card">
+    <h5>{{comment.firstName}} {{comment.lastName}}</h5>
     <p class="text-justify p-4">{{comment.content}}<p>
+    <small><em>{{comment.createdAt|date("d-F-Y")}}</em></small>
     </div>
 
     {% endfor %}

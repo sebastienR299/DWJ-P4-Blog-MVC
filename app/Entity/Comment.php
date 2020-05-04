@@ -18,6 +18,12 @@ class Comment
     /** @Id @Column(type="integer") @GeneratedValue */
     protected $id;
 
+    /** @Column(type="string") */
+    protected $firstName;
+
+    /** @Column(type="string") */
+    protected $lastName;
+
     /** @Column(type="text") */
     protected $content;
 
@@ -47,6 +53,30 @@ class Comment
     public function getId()
     {
         return $this->id;
+    }
+
+    #FIRSTNAME
+
+    public function getFirstName()
+    {
+        return $this->firstName;
+    }
+
+    public function setFirstName($firstName)
+    {
+        $this->firstName = $firstName;
+    }
+
+    #LASTNAME
+
+    public function getLastName()
+    {
+        return $this->lastName;
+    }
+
+    public function setLastName($lastName)
+    {
+        $this->lastName = $lastName;
     }
 
     #CONTENT

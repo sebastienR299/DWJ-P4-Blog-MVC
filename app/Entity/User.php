@@ -47,6 +47,7 @@ class User
     public function __construct()
     {
         $this->articles = new ArrayCollection();
+        $this->comments = new ArrayCollection();
     }
 
     #ID
