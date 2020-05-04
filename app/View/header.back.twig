@@ -6,16 +6,13 @@
     <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
         <div class="navbar-nav">
             <a class="nav-item nav-link" href="?p=home">Home<span class="sr-only">(current)</span></a>
-            <a class="nav-item nav-link" href="?p=connexion">Connexion</a>
-            <a class="nav-item nav-link" href="?p=inscription">Inscription</a>
+            <a class="nav-item nav-link" href="?p=viewAddArticle">Créer un article</a>
+            <a class="nav-item nav-link" href="?p=inscription">Modifier un article</a>
         </div>
     </div>
     {% if session == true %}
     <div class="row my-auto">
         <h5 class="text-white mr-2 my-auto">{{session.firstName}} {{session.lastName}}</h5>
-        {% if session.admin == 1 %}
-        <a href="?p=homeBack" class="btn btn-primary mr-2">Tableau de bord</a>
-        {% endif %}
         <a href="?p=logout" class="btn btn-danger mr-2">Déconnexion</a>
     </div>
     {% endif %}

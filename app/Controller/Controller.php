@@ -16,7 +16,6 @@ class Controller
     private $commentRepository;
     private $userRepository;
     private $pictureRepository;
-    private $twig;
 
     public function __construct()
     {
@@ -31,6 +30,69 @@ class Controller
     {
         require (dirname(__DIR__, 2).'/config/twig-config.php');
         echo $twig->render('connexion.front.twig');
+    }
+
+    public function dashboard()
+    {
+        $users = $this->userRepository->findAll();
+        $comments = $this->commentRepository->findAll();
+        $articles = $this->articleRepository->findAll();
+
+        require (dirname(__DIR__, 2).'/config/twig-config.php');
+        echo $twig->render('home.back.twig', [
+            'users' => $users,
+            'comments' => $comments,
+            'articles' => $articles
+        ]);
+    }
+
+    public function logout()
+    {
+        session_destroy();
+        header('Location: ?p=home');
+    }
+
+    public function signIn()
+    {
+        $users = $this->userRepository->findAll();
+
+        foreach($users as $user)
+        {
+            if (!empty($_POST['email']) && !empty($_POST['password']))
+            {
+                if ($_POST['email'] === $user->getEmail() && password_verify($_POST['password'], $user->getPassword()))
+                {
+                    $_SESSION['logged'] = true;
+                    $_SESSION['id'] = $user->getId();
+                    $_SESSION['firstName'] = $user->getFirstName();
+                    $_SESSION['lastName'] = $user->getLastName();
+                    $_SESSION['email'] = $user->getEmail();
+                    $_SESSION['admin'] = $user->getAdmin();
+
+                    header('Location: ?p=home');
+                }
+                else
+                {
+                    $returnConnect = 'Désolé identifiant incorrect';
+                    $colorConnect = 'danger';
+                    require (dirname(__DIR__, 2).'/config/twig-config.php');
+                    echo $twig->render('connexion.front.twig', [
+                        'returnConnect' => $returnConnect,
+                        'colorConnect' => $colorConnect
+                    ]);
+                }
+            }
+            else
+            {
+                $returnConnect = 'Veuillez remplir tout les champs';
+                $colorConnect = 'warning';
+                require (dirname(__DIR__, 2).'/config/twig-config.php');
+                echo $twig->render('connexion.front.twig', [
+                    'returnConnect' => $returnConnect,
+                    'colorConnect' => $colorConnect
+                ]);
+            }
+        }
     }
 
     public function getInscription()
@@ -122,6 +184,35 @@ class Controller
             'article' => $article,
             'comments' => $comments
         ]);
+    }
+
+    public function viewAddArticle()
+    {
+        require (dirname(__DIR__, 2).'/config/twig-config.php');
+        echo $twig->render('article.back.twig');
+    }
+
+    public function addArticle()
+    {
+
+        $user = $this->userRepository->find($_SESSION['id']);
+
+        if (!empty($_POST['title']) && !empty($_POST['content']))
+        {
+            $article = new Article();
+            $article->setCreatedAt(new DateTime(date('d-m-Y')));
+            $article->setTitle($_POST['title']);
+            $article->setContent($_POST['content']);
+            $article->setPictureUrl('...');
+            $article->setPictureAlt('...');
+            $user->addArticle($article);
+            $article->setUser($user);
+            $this->entityManager->persist($article);
+            $this->entityManager->persist($user);
+            $this->entityManager->flush();
+
+            header('Location: ?p=homeBack');
+        }
     }
 
     public function addComment($articleId)

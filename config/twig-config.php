@@ -8,4 +8,4 @@ $twig = new Twig\Environment($loader, [
     'cache' =>  false,
 ]);
 $twig->addExtension(new StringExtension());
-// $twig->addGlobal('session', $_SESSION);
+$twig->addGlobal('session', $_SESSION);

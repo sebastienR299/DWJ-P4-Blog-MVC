@@ -27,6 +27,18 @@ class Router
                     $this->controller->getArticles();
                 break;
 
+                case "homeBack" :
+                    $this->controller->dashboard();
+                break;
+
+                case "viewAddArticle" :
+                    $this->controller->viewAddArticle();
+                break;
+
+                case "addArticle" : 
+                    $this->controller->addArticle();
+                break;
+
                 case "article" : 
                     $this->controller->getArticle($_GET['id']);
                 break;
@@ -45,6 +57,14 @@ class Router
 
                 case "register" : 
                     $this->controller->register();
+                break;
+
+                case "signIn" : 
+                    $this->controller->signIn();
+                break;
+
+                case "logout" :
+                    $this->controller->logout();
                 break;
 
                 case "error404" :

@@ -1,0 +1,24 @@
+{% extends 'template.back.twig' %}
+
+{% block title %}<title>Tabeau de bord</title>{% endblock %}
+
+{% block content %}
+
+    <div class="container">
+
+        <div class="row mt-5">
+
+            <div class="col-md-5 bg-danger">
+            <h5 class="display-3">{{ articles|length }}</h5>
+            <p class="justify-self-end"> nombres d'articles</p>
+            </div>
+            <div class="col-md-2"></div>
+            <div class="col-md-5 bg-danger">
+            <h5>Nombres d'articles : </h5>
+            </div>
+
+        </div>
+
+    </div>
+
+{% endblock %}
