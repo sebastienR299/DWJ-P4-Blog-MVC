@@ -32,20 +32,6 @@ class Controller
         echo $twig->render('connexion.front.twig');
     }
 
-    public function dashboard()
-    {
-        $users = $this->userRepository->findAll();
-        $comments = $this->commentRepository->findAll();
-        $articles = $this->articleRepository->findAll();
-
-        require (dirname(__DIR__, 2).'/config/twig-config.php');
-        echo $twig->render('home.back.twig', [
-            'users' => $users,
-            'comments' => $comments,
-            'articles' => $articles
-        ]);
-    }
-
     public function logout()
     {
         session_destroy();
@@ -164,32 +150,84 @@ class Controller
         }
     }
 
-    public function getArticles()
+    public function getArticles($isAdmin = false)
     {
         $articles = $this->articleRepository->findAll();
-
+        $comments = $this->commentRepository->findAll();
+        $users = $this->userRepository->findAll();
         require (dirname(__DIR__, 2).'/config/twig-config.php');
-        echo $twig->render('home.front.twig', [
-            'articles' => $articles
-        ]);
+
+        if ($isAdmin === false)
+        {
+            echo $twig->render('home.front.twig', [
+                'articles' => $articles
+            ]);
+        }
+        else
+        {
+            echo $twig->render('home.back.twig', [
+                'users' => $users,
+                'comments' => $comments,
+                'articles' => $articles
+            ]);
+        }
+        
+        
     }
 
-    public function getArticle($articleId)
+    public function getArticle($articleId, $isAdmin = false)
     {
         $article = $this->articleRepository->findBy(['id' => $articleId]);
         $comments = $this->commentRepository->findBy(["article" => $articleId]);
 
+        if ($isAdmin === false)
+        {
+            require (dirname(__DIR__, 2).'/config/twig-config.php');
+            echo $twig->render('article.front.twig', [
+                'article' => $article,
+                'comments' => $comments
+            ]);
+        }
+        else
+        {
+            require (dirname(__DIR__, 2).'/config/twig-config.php');
+            echo $twig->render('article.back.twig', [
+                'article' => $article,
+                'comments' => $comments
+            ]);
+        } 
+    }
+
+    public function getArticleUpdate($articleId)
+    {
+        $article = $this->articleRepository->findBy(['id' => $articleId]);
         require (dirname(__DIR__, 2).'/config/twig-config.php');
-        echo $twig->render('article.front.twig', [
-            'article' => $article,
-            'comments' => $comments
+        echo $twig->render('articleUpdate.back.twig', [
+            'article' => $article
         ]);
+    }
+
+    public function setArticleUpdateSave($articleId)
+    {
+        $article = $this->articleRepository->find($articleId);
+        $article->setTitle($_POST['title']);
+        $article->setContent($_POST['content']);
+        $this->entityManager->persist($article);
+        $this->entityManager->flush();
+
+        header('Location: ?p=articleBack&id=' . $article->getId());
     }
 
     public function viewAddArticle()
     {
         require (dirname(__DIR__, 2).'/config/twig-config.php');
-        echo $twig->render('article.back.twig');
+        echo $twig->render('createArticle.back.twig');
+    }
+
+    public function viewUpdateArticle()
+    {
+        require (dirname(__DIR__, 2).'/config/twig-config.php');
+        echo $twig->render('update.back.twig');
     }
 
     public function addArticle()

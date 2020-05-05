@@ -1,0 +1,25 @@
+{% extends 'template.back.twig' %}
+
+{% block content %}
+
+    <div class="container">
+
+    {% for row in article %}
+
+    <form method="post" action="?p=articleUpdateSave&id={{row.id}}" class="col-md-8 mx-auto mt-5">
+        <div class="form-group">
+            <label for="title">Titre de l'article</label>
+            <input type="text" value="{{row.title}}" class="form-control" name="title" id="title-back" aria-describedby="titleHelp">
+        </div>
+        <div class="form-group">
+            <label for="content">Contenu de l'article</label>
+            <textarea class="form-control" name="content" id="content-back" rows="5">{{row.content}}</textarea>
+        </div>
+        <button type="submit" class="btn btn-primary btn-lg d-block mx-auto mt-4 rounded-pill">Valider</button>
+    </form>
+
+    {% endfor %}
+
+    </div>
+
+{% endblock %}

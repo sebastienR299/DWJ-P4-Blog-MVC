@@ -1,0 +1,21 @@
+{% extends 'template.back.twig' %}
+
+{% block content %}
+
+    <div class="container">
+
+    <form method="post" action="?p=addArticle" class="col-md-8 mx-auto mt-5">
+        <div class="form-group">
+            <label for="title">Titre de l'aricle</label>
+            <input type="text" class="form-control" name="title" id="title-back" aria-describedby="titleHelp">
+        </div>
+        <div class="form-group">
+            <label for="content">Contenu de l'article</label>
+            <textarea class="form-control" name="content" id="content-back" rows="5"></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary btn-lg d-block mx-auto mt-4 rounded-pill">Valider</button>
+    </form>
+
+    </div>
+
+{% endblock %}

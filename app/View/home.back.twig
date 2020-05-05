@@ -19,6 +19,13 @@
 
         </div>
 
+        {% for article in articles %}
+
+            <h4><a href="?p=articleBack&id={{article.id}}">{{ article.title }}</a></h4>
+            <p>{{ article.content|u.truncate(400, '...') }}</p>
+
+        {% endfor %}
+
     </div>
 
 {% endblock %}

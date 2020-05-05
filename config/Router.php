@@ -28,11 +28,15 @@ class Router
                 break;
 
                 case "homeBack" :
-                    $this->controller->dashboard();
+                    $this->controller->getArticles(true);
                 break;
 
                 case "viewAddArticle" :
                     $this->controller->viewAddArticle();
+                break;
+
+                case "viewUpdateArticle" :
+                    $this->controller->viewUpdateArticle();
                 break;
 
                 case "addArticle" : 
@@ -41,6 +45,18 @@ class Router
 
                 case "article" : 
                     $this->controller->getArticle($_GET['id']);
+                break;
+
+                case "articleBack" :
+                    $this->controller->getArticle($_GET['id'], true);
+                break;
+
+                case "articleBackUpdate" :
+                    $this->controller->getArticleUpdate($_GET['id']);
+                break;
+
+                case "articleUpdateSave" :
+                    $this->controller->setArticleUpdateSave($_GET['id']);
                 break;
 
                 case "addComment" :
