@@ -1,22 +1,7 @@
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <a class="navbar-brand" href="?p=home">Jean Forteroche</a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-        <div class="navbar-nav">
-            <a class="nav-item nav-link" href="?p=home">Home<span class="sr-only">(current)</span></a>
-            <a class="nav-item nav-link" href="?p=connexion">Connexion</a>
-            <a class="nav-item nav-link" href="?p=inscription">Inscription</a>
-        </div>
-    </div>
-    {% if session == true %}
-    <div class="row my-auto">
-        <h5 class="text-white mr-2 my-auto">{{session.firstName}} {{session.lastName}}</h5>
-        {% if session.admin == 1 %}
-        <a href="?p=homeBack" class="btn btn-primary mr-2">Tableau de bord</a>
-        {% endif %}
-        <a href="?p=logout" class="btn btn-danger mr-2">Déconnexion</a>
-    </div>
-    {% endif %}
-</nav>
+<div class="hero">
+    <img class="img-hero" src="/images/header_modif.jpg"/>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320" class="shape-svg_1">
+        <path  fill-opacity="1" d="M0,32L240,288L480,192L720,256L960,224L1200,288L1440,160L1440,320L1200,320L960,320L720,320L480,320L240,320L0,320Z"></path>
+    </svg>
+    <p class="title_header">Un dernier billet pour l'alaska</p>
+</div>

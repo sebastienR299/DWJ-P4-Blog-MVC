@@ -4,35 +4,56 @@
 
     <div class="container">
 
-        <h1 class="text-center p-4">Publications</h1>
-
     {% for row in article %}
 
     {% block title %}<title>{{ row.title }}</title>{% endblock %}
 
-        <h4>{{ row.title }}</h4>
-        <p>{{ row.content }}</p>
+        <div class="separator_article"></div>
 
-    <hr class="m-4" />
+        <div class="bloc_article shadow">
+        <img src="/images/header.jpg" alt="" class="img-profil"/>
+            <div class="items_article">
+                <h4 class="title_article"><a href="#">{{ row.title }}</a></h4>
+                <p class="p_article">{{row.content}}</p>
+            </div>
+            <div class="btn_article">
+                {% for user in users %}
+                <p>{{user.firstName}} {{user.lastName}}</p>
+                {% endfor %}
+                <p>{{article.createdAt | date('d-m-Y')}}</p>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="separator_article"></div>
+
+    <div class="container">
 
     {% for comment in comments %}
 
-    <div class="card">
-    <h5>{{comment.firstName}} {{comment.lastName}}</h5>
-    <p class="text-justify p-4">{{comment.content}}<p>
-    <small><em>{{comment.createdAt|date("d-F-Y")}}</em></small>
+    <div class="bloc_comment shadow">
+        <h5 class="title_comment">{{comment.firstName}} {{comment.lastName}}</h5>
+            <p class="p_comment">{{comment.content}}<p>
+        <div class="bloc_bottom_comment">
+            <p class="date_comment">{{comment.createdAt|date("d-F-Y")}}</p>
+            {% if session.logged == true %}
+            <a href="#"><span class="material-icons">report_problem</span></a>
+            {% endif %}
+        </div>
     </div>
 
     {% endfor %}
 
-    <hr class="m-4"/>
+    <div class="separator_article"></div>
+
     {% if session.logged == true %}
-    <form method="POST" action="?p=addComment&id={{row.id}}">
+    <form method="POST" action="?p=addComment&id={{row.id}}" class="bloc_add_comment">
         <div class="form-group">
             <label for="content">Message</label>
             <textarea class="form-control form-control-lg" id="_content-comment" name="content" rows="5"></textarea>
         </div>
-        <button type="submit" class="btn btn-primary btn-lg">Ajouter</button>
+        <button type="submit" class="rounded-pill btn btn-primary btn-lg">Ajouter</button>
     </form>
     {% endif %}
 

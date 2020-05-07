@@ -4,27 +4,48 @@
 
 {% block content %}
 
-    <div class="container">
+    {# AFFICHAGE DES STATISTIQUES #}
+    <div class="container-fluid container-back-stats shadow">
 
-        <div class="row mt-5">
-
-            <div class="col-md-5 bg-danger">
-            <h5 class="display-3">{{ articles|length }}</h5>
-            <p class="justify-self-end"> nombres d'articles</p>
+        <div class="container">
+            <div class="item-1">
+                <p>nombre de publications</p>
+                <span>{{ articles|length }}</span>
             </div>
-            <div class="col-md-2"></div>
-            <div class="col-md-5 bg-danger">
-            <h5>Nombres d'articles : </h5>
+            <hr/>
+            <div class="item-1">
+                <p>nombre de commentaires</p>
+                <span>{{ comments|length }}</span>
             </div>
-
+            <hr/>
+            <div class="item-1">
+                <p>nombre d'utilisateurs</p>
+                <span>{{ users|length }}</span>
+            </div>
         </div>
 
-        {% for article in articles %}
+    </div>
 
-            <h4><a href="?p=articleBack&id={{article.id}}">{{ article.title }}</a></h4>
-            <p>{{ article.content|u.truncate(400, '...') }}</p>
+    {# AFFICHAGE DES ARTICLES #}
+    <div class="container-fluid container-back-article">
 
-        {% endfor %}
+    {# MESSAGE DE RETOUR #}
+    {% if message is defined %}
+        <div class="alert alert-success" role="alert">
+            A simple success alert—check it out!
+        </div>
+    {% endif %}
+
+    {# BLOC ARTICLES #}
+    {% for article in articles %}
+        <div class="container">
+            <div class="bloc_article_back shadow">
+                <span><a href="?p=deleteArticle&id={{article.id}}">&times;</a></span>
+                <h4><a href="?p=articleBack&id={{article.id}}">{{ article.title }}</a></h4>
+                <p>{{ article.content|u.truncate(400, '...') }}</p>
+            </div>
+        </div>
+    {% endfor %}
 
     </div>
 

@@ -160,7 +160,8 @@ class Controller
         if ($isAdmin === false)
         {
             echo $twig->render('home.front.twig', [
-                'articles' => $articles
+                'articles' => $articles,
+                'users' => $users
             ]);
         }
         else
@@ -179,13 +180,15 @@ class Controller
     {
         $article = $this->articleRepository->findBy(['id' => $articleId]);
         $comments = $this->commentRepository->findBy(["article" => $articleId]);
+        $user = $this->userRepository->findBy(['id' => $articleId]);
 
         if ($isAdmin === false)
         {
             require (dirname(__DIR__, 2).'/config/twig-config.php');
             echo $twig->render('article.front.twig', [
                 'article' => $article,
-                'comments' => $comments
+                'comments' => $comments,
+                'users' => $user
             ]);
         }
         else
@@ -193,7 +196,8 @@ class Controller
             require (dirname(__DIR__, 2).'/config/twig-config.php');
             echo $twig->render('article.back.twig', [
                 'article' => $article,
-                'comments' => $comments
+                'comments' => $comments,
+                'users' => $user
             ]);
         } 
     }
@@ -251,6 +255,16 @@ class Controller
 
             header('Location: ?p=homeBack');
         }
+    }
+
+    public function deleteArticle($articleId)
+    {
+        $article = $this->articleRepository->find($articleId);
+
+        $this->entityManager->remove($article);
+        $this->entityManager->flush();
+
+        header('Location: ?p=homeBack');
     }
 
     public function addComment($articleId)

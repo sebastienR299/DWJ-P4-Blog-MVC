@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Pacifico|Permanent+Marker&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="./main.css">
     {% block title %}{% endblock %}
 
@@ -23,7 +24,12 @@
             <a id="_t1" href="?p=home">Home</a>
             <a id="_t2" href="?p=connexion">Login</a>
             <a id="_t3" href="?p=inscription">Signin</a>
-            <a id="_t4" href="#">Logout</a>
+            {% if session.logged == true %}
+            <a id="_t4" href="?p=logout">Logout</a>
+            {% endif %}
+            {% if session.admin == 1 %}
+            <a id="_t5" href="?p=homeBack">Dashboard</a>
+            {% endif %}
         </div>
     </div>
 
@@ -31,7 +37,13 @@
 
     {{include('header.front.twig')}}
 
+    <div class="container" id="bloc-home">
+
     {% block content %}{% endblock %}
+
+    </div>
+
+    {# {{include('footer.front.twig')}} #}
 
     </div>
 

@@ -43,6 +43,10 @@ class Router
                     $this->controller->addArticle();
                 break;
 
+                case "deleteArticle" :
+                    $this->controller->deleteArticle($_GET['id']);
+                break;
+
                 case "article" : 
                     $this->controller->getArticle($_GET['id']);
                 break;

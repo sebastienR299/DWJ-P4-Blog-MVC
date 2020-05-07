@@ -4,14 +4,23 @@
 
 {% block content %}
 
-    <div class="container">
-
         <h1 class="text-center p-4">Publications</h1>
 
     {% for article in articles %}
 
-        <h4><a href="?p=article&id={{article.id}}">{{ article.title }}</a></h4>
-        <p>{{ article.content|u.truncate(400, '...') }}</p>
+        <div class="bloc_article shadow">
+        <img src="/images/header.jpg" alt="" class="img-profil"/>
+            <div class="items_article">
+                <h4 class="title_article"><a href="?p=article&id={{article.id}}">{{ article.title }}</a></h4>
+                <p class="p_article">{{ article.content|u.truncate(300, '...') }}</p>
+            </div>
+            <div class="btn_article">
+            {% for user in users %}
+                <p>{{user.firstName}} {{user.lastName}}</p>
+            {% endfor %}
+                <p>{{article.createdAt | date('d-m-Y')}}</p>
+            </div>
+        </div>
 
     {% endfor %}
 
@@ -22,7 +31,5 @@
     </div>
 
     {% endif %}
-
-    </div>
 
 {% endblock %}
