@@ -155,7 +155,11 @@ class Controller
         $articles = $this->articleRepository->findAll();
         $comments = $this->commentRepository->findAll();
         $users = $this->userRepository->findAll();
+        $reportComment = $this->commentRepository->findBy(['report' => 1]);
         require (dirname(__DIR__, 2).'/config/twig-config.php');
+
+        $_SESSION['returnMessage'] = '';
+        $_SESSION['colorMessage'] = '';
 
         if ($isAdmin === false)
         {
@@ -166,10 +170,14 @@ class Controller
         }
         else
         {
+            $_SESSION['returnMessage'] = '';
+            $_SESSION['colorMessage'] = '';
+
             echo $twig->render('home.back.twig', [
                 'users' => $users,
                 'comments' => $comments,
-                'articles' => $articles
+                'articles' => $articles,
+                'reportComment' => $reportComment
             ]);
         }
         
@@ -181,6 +189,9 @@ class Controller
         $article = $this->articleRepository->findBy(['id' => $articleId]);
         $comments = $this->commentRepository->findBy(["article" => $articleId]);
         $user = $this->userRepository->findBy(['id' => $articleId]);
+
+        $_SESSION['returnMessage'] = '';
+        $_SESSION['colorMessage'] = '';
 
         if ($isAdmin === false)
         {
@@ -219,11 +230,17 @@ class Controller
         $this->entityManager->persist($article);
         $this->entityManager->flush();
 
+        $_SESSION['returnMessage'] = 'Votre article a bien été modifié';
+        $_SESSION['colorMessage'] = 'success';
+
         header('Location: ?p=articleBack&id=' . $article->getId());
     }
 
     public function viewAddArticle()
     {
+        $_SESSION['returnMessage'] = '';
+        $_SESSION['colorMessage'] = '';
+
         require (dirname(__DIR__, 2).'/config/twig-config.php');
         echo $twig->render('createArticle.back.twig');
     }
@@ -231,7 +248,7 @@ class Controller
     public function viewUpdateArticle()
     {
         require (dirname(__DIR__, 2).'/config/twig-config.php');
-        echo $twig->render('update.back.twig');
+        echo $twig->render('articleUpdate.back.twig');
     }
 
     public function addArticle()
@@ -253,7 +270,17 @@ class Controller
             $this->entityManager->persist($user);
             $this->entityManager->flush();
 
+            $_SESSION['returnMessage'] = 'Votre article a bien été ajouté';
+            $_SESSION['colorMessage'] = 'success';
+
             header('Location: ?p=homeBack');
+        }
+        else
+        {
+            $_SESSION['returnMessage'] = 'Désolé, tout les champs ne sont pas remplis';
+            $_SESSION['colorMessage'] = 'danger';
+
+            header('Location: ?p=viewAddArticle');
         }
     }
 
@@ -263,6 +290,9 @@ class Controller
 
         $this->entityManager->remove($article);
         $this->entityManager->flush();
+
+        $_SESSION['returnMessage'] = 'Votre article a bien été supprimé';
+        $_SESSION['colorMessage'] = 'success';
 
         header('Location: ?p=homeBack');
     }
@@ -292,6 +322,66 @@ class Controller
 
         header('Location: ?p=article&id=' . $article->getId());
         
+    }
+
+    public function reportComment($articleId, $commentId)
+    {
+        $article = $this->articleRepository->find($articleId);
+        $comment = $this->commentRepository->find($commentId);
+
+        $comment->setReport(1);
+        $this->entityManager->persist($comment);
+        $this->entityManager->flush();
+
+        header('Location: ?p=article&id=' . $article->getId());
+    }
+
+    public function viewReportComment()
+    {
+        $comments = $this->commentRepository->findBy(['report' => 1]);
+        $reportComment = count($comments);
+
+        require (dirname(__DIR__, 2).'/config/twig-config.php');
+        echo $twig->render('report.back.twig', [
+            'comments' => $comments,
+            'reportComment' => $reportComment
+        ]);
+    }
+
+    public function validReportComment($commentId)
+    {
+        $comment = $this->commentRepository->find($commentId);
+        
+
+        $comment->setReport(0);
+        $this->entityManager->persist($comment);
+        $this->entityManager->flush();
+
+        $returnMessage = 'Le commentaire à bien été validé';
+        $colorMessage = 'success';
+
+        require (dirname(__DIR__, 2).'/config/twig-config.php');
+        echo $twig->render('report.back.twig', [
+            'returnMessage' => $returnMessage,
+            'colorMessage' => $colorMessage,
+        ]);
+    }
+
+    public function deleteReportComment($commentId)
+    {
+        $comment = $this->commentRepository->find($commentId);
+
+        $this->entityManager->remove($comment);
+        $this->entityManager->flush();
+
+        $returnMessage = 'Le commentaire à bien été supprimé';
+        $colorMessage = 'success';
+
+        require (dirname(__DIR__, 2).'/config/twig-config.php');
+        echo $twig->render('report.back.twig', [
+            'returnMessage' => $returnMessage,
+            'colorMessage' => $colorMessage,
+        ]);
     }
 
 }

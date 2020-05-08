@@ -22,6 +22,11 @@
                 <p>nombre d'utilisateurs</p>
                 <span>{{ users|length }}</span>
             </div>
+            <hr/>
+            <div class="item-1">
+                <p>Commentaires en attente de modération</p>
+                <span>{{ reportComment|length }}</span>
+            </div>
         </div>
 
     </div>
@@ -30,9 +35,9 @@
     <div class="container-fluid container-back-article">
 
     {# MESSAGE DE RETOUR #}
-    {% if message is defined %}
-        <div class="alert alert-success" role="alert">
-            A simple success alert—check it out!
+    {% if session.returnMessage is not empty %}
+        <div class="col-8 mx-auto text-center alert alert-{{session.colorMessage}}" role="alert">
+            {{session.returnMessage}}
         </div>
     {% endif %}
 
@@ -40,11 +45,12 @@
     {% for article in articles %}
         <div class="container">
             <div class="bloc_article_back shadow">
-                <span><a href="?p=deleteArticle&id={{article.id}}">&times;</a></span>
+                <span><a href="?p=deleteArticle&id={{article.id}}" onclick="return confirm('Confirmez-vous la suppression ?');">&times;</a></span>
                 <h4><a href="?p=articleBack&id={{article.id}}">{{ article.title }}</a></h4>
                 <p>{{ article.content|u.truncate(400, '...') }}</p>
             </div>
         </div>
+
     {% endfor %}
 
     </div>

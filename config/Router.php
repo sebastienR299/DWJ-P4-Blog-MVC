@@ -67,6 +67,22 @@ class Router
                     $this->controller->addComment($_GET['id'], $_POST['content']);
                 break;
 
+                case "reportComment" :
+                    $this->controller->reportComment($_GET['id'], $_GET['idComment']);
+                break;
+
+                case "viewReportComment" :
+                    $this->controller->viewReportComment();
+                break;
+
+                case "validReport" :
+                    $this->controller->validReportComment($_GET['id']);
+                break;
+
+                case "deleteReport" :
+                    $this->controller->deleteReportComment($_GET['id']);
+                break;
+
                 case "connexion" :
                     $this->controller->login();
                 break;
@@ -102,3 +118,4 @@ class Router
     }
 
 }
+

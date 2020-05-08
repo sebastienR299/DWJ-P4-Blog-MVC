@@ -38,7 +38,13 @@
         <div class="bloc_bottom_comment">
             <p class="date_comment">{{comment.createdAt|date("d-F-Y")}}</p>
             {% if session.logged == true %}
-            <a href="#"><span class="material-icons">report_problem</span></a>
+            <a href="?p=reportComment&id={{row.id}}&idComment={{comment.id}}">
+            {% if comment.report == 0 %}
+            <span class="material-icons" style="color:#333333">report_problem</span>
+            {% else %}
+            <span class="material-icons" style="color:crimson">report_problem</span>
+            {% endif %}
+            </a>
             {% endif %}
         </div>
     </div>
