@@ -3,6 +3,7 @@
 
 namespace App\config;
 use App\Controller\Controller;
+use AltoRouter;
 use Exception;
 
 class Router
@@ -24,11 +25,11 @@ class Router
             switch ($_GET['p'])
             {
                 case "home" : 
-                    $this->controller->getArticles();
+                    $this->controller->getArticles($_GET['page']);
                 break;
 
                 case "homeBack" :
-                    $this->controller->getArticles(true);
+                    $this->controller->getArticles($_GET['page'], true);
                 break;
 
                 case "viewAddArticle" :
@@ -112,7 +113,7 @@ class Router
         }
         else
         {
-            $this->controller->getArticles();
+            $this->controller->getArticles($_GET['page']);
         } 
         
     }

@@ -5,8 +5,9 @@ namespace App\Controller;
 use App\Entity\Article;
 use App\Entity\Comment;
 use App\Entity\User;
-use App\Entity\Picture;
 use DateTime;
+use Exception;
+use PHPImageWorkshop\ImageWorkshop;
 
 class Controller
 {
@@ -15,15 +16,11 @@ class Controller
     private $articleRepository;
     private $commentRepository;
     private $userRepository;
-    private $pictureRepository;
+
 
     public function __construct()
     {
-        $this->entityManager = require (dirname(__DIR__,2).'/config/bootstrap.php');
-        $this->articleRepository = $this->entityManager->getRepository(Article::class);
-        $this->commentRepository = $this->entityManager->getRepository(Comment::class);
-        $this->userRepository = $this->entityManager->getRepository(User::class);
-        $this->pictureRepository = $this->entityManager->getRepository(Picture::class);
+        
     }
 
     public function login()
@@ -40,6 +37,8 @@ class Controller
 
     public function signIn()
     {
+        $this->entityManager = require (dirname(__DIR__,2).'/config/bootstrap.php');
+        $this->userRepository = $this->entityManager->getRepository(User::class);
         $users = $this->userRepository->findAll();
 
         foreach($users as $user)
@@ -89,6 +88,8 @@ class Controller
 
     public function register()
     {
+        $this->entityManager = require (dirname(__DIR__,2).'/config/bootstrap.php');
+        $this->userRepository = $this->entityManager->getRepository(User::class);
         require (dirname(__DIR__, 2).'/config/twig-config.php');
         $users = $this->userRepository->findAll();
         $alreadyExist = false;
@@ -150,9 +151,29 @@ class Controller
         }
     }
 
-    public function getArticles($isAdmin = false)
+    public function getArticles($page, $isAdmin = false)
     {
-        $articles = $this->articleRepository->findAll();
+        $this->entityManager = require (dirname(__DIR__,2).'/config/bootstrap.php');
+        $this->articleRepository = $this->entityManager->getRepository(Article::class);
+        $this->commentRepository = $this->entityManager->getRepository(Comment::class);
+        $this->userRepository = $this->entityManager->getRepository(User::class);
+
+        // Nombre d'articles par page
+        $perPage = 3;
+        // Resultat minimum
+        $resultMin = ($page*$perPage)-$perPage;
+        // Resultat maximum
+        $resultMax = ($page*$perPage);
+
+        // Recherche des articles avec les contraintes OFFSET / LIMIT
+        $articles = $this->articleRepository->findAllByDesc($resultMin,$resultMax);
+
+        // Nombre d'articles
+        $nbArticles = count($articles);
+
+        // Calcule du nombre de page en fonction du nombre d'article
+        $nbPages = ceil($nbArticles/$perPage);
+
         $comments = $this->commentRepository->findAll();
         $users = $this->userRepository->findAll();
         $reportComment = $this->commentRepository->findBy(['report' => 1]);
@@ -165,7 +186,9 @@ class Controller
         {
             echo $twig->render('home.front.twig', [
                 'articles' => $articles,
-                'users' => $users
+                'users' => $users,
+                'nbPages' => $nbPages,
+                'page' => $page
             ]);
         }
         else
@@ -177,7 +200,9 @@ class Controller
                 'users' => $users,
                 'comments' => $comments,
                 'articles' => $articles,
-                'reportComment' => $reportComment
+                'reportComment' => $reportComment,
+                'nbPages' => $nbPages,
+                'page' => $page
             ]);
         }
         
@@ -186,6 +211,10 @@ class Controller
 
     public function getArticle($articleId, $isAdmin = false)
     {
+        $this->entityManager = require (dirname(__DIR__,2).'/config/bootstrap.php');
+        $this->articleRepository = $this->entityManager->getRepository(Article::class);
+        $this->commentRepository = $this->entityManager->getRepository(Comment::class);
+        $this->userRepository = $this->entityManager->getRepository(User::class);
         $article = $this->articleRepository->findBy(['id' => $articleId]);
         $comments = $this->commentRepository->findBy(["article" => $articleId]);
         $user = $this->userRepository->findBy(['id' => $articleId]);
@@ -215,6 +244,8 @@ class Controller
 
     public function getArticleUpdate($articleId)
     {
+        $this->entityManager = require (dirname(__DIR__,2).'/config/bootstrap.php');
+        $this->articleRepository = $this->entityManager->getRepository(Article::class);
         $article = $this->articleRepository->findBy(['id' => $articleId]);
         require (dirname(__DIR__, 2).'/config/twig-config.php');
         echo $twig->render('articleUpdate.back.twig', [
@@ -224,6 +255,8 @@ class Controller
 
     public function setArticleUpdateSave($articleId)
     {
+        $this->entityManager = require (dirname(__DIR__,2).'/config/bootstrap.php');
+        $this->articleRepository = $this->entityManager->getRepository(Article::class);
         $article = $this->articleRepository->find($articleId);
         $article->setTitle($_POST['title']);
         $article->setContent($_POST['content']);
@@ -238,8 +271,8 @@ class Controller
 
     public function viewAddArticle()
     {
-        $_SESSION['returnMessage'] = '';
-        $_SESSION['colorMessage'] = '';
+        // $_SESSION['returnMessage'] = '';
+        // $_SESSION['colorMessage'] = '';
 
         require (dirname(__DIR__, 2).'/config/twig-config.php');
         echo $twig->render('createArticle.back.twig');
@@ -254,26 +287,58 @@ class Controller
     public function addArticle()
     {
 
+        $this->entityManager = require (dirname(__DIR__,2).'/config/bootstrap.php');
+        $this->articleRepository = $this->entityManager->getRepository(Article::class);
+        $this->userRepository = $this->entityManager->getRepository(User::class);
         $user = $this->userRepository->find($_SESSION['id']);
 
-        if (!empty($_POST['title']) && !empty($_POST['content']))
+        if (!empty($_POST['title']) && !empty($_POST['content']) && !empty($_FILES))
         {
-            $article = new Article();
-            $article->setCreatedAt(new DateTime(date('d-m-Y')));
-            $article->setTitle($_POST['title']);
-            $article->setContent($_POST['content']);
-            $article->setPictureUrl('...');
-            $article->setPictureAlt('...');
-            $user->addArticle($article);
-            $article->setUser($user);
-            $this->entityManager->persist($article);
-            $this->entityManager->persist($user);
-            $this->entityManager->flush();
 
-            $_SESSION['returnMessage'] = 'Votre article a bien été ajouté';
-            $_SESSION['colorMessage'] = 'success';
+            $name = pathinfo($_FILES["pictureUrl"]["name"]);
+            $file_name = md5($name["filename"]) . "." . $name["extension"];
+            $file_tmp_name = $_FILES["pictureUrl"]["tmp_name"];
+            $target_file = dirname(__DIR__,2)."/public/images/uploads/" . $file_name;
+            $file_extension = strrchr($file_name, ".");
+            $allowExtensions = array(".jpg", ".jpeg", ".png");
+            $file_error = $_FILES["pictureUrl"]["error"];
 
-            header('Location: ?p=homeBack');
+            if($file_error == 0 )
+            {
+                if(in_array($file_extension, $allowExtensions)) {
+                
+                    if(move_uploaded_file($file_tmp_name, $target_file)) {
+                        echo "Fichier envoyé avec succès";
+                    }
+                } else {
+                    echo "Désolé ce type de fichier n'est pas pris en charge";
+                }
+
+                $article = new Article();
+                $article->setCreatedAt(new DateTime(date('d-m-Y')));
+                $article->setTitle($_POST['title']);
+                $article->setContent($_POST['content']);
+                $article->setPictureUrl($file_name);
+                $article->setPictureAlt($file_name);
+                $user->addArticle($article);
+                $article->setUser($user);
+                $this->entityManager->persist($article);
+                $this->entityManager->persist($user);
+                $this->entityManager->flush();
+    
+                $_SESSION['returnMessage'] = 'Votre article a bien été ajouté';
+                $_SESSION['colorMessage'] = 'success';
+    
+                header('Location: ?p=homeBack&page=1');
+            }
+            else
+            {
+                $_SESSION['returnMessage'] = 'Désolé, les données des champs sont incorrects';
+                $_SESSION['colorMessage'] = 'danger';
+
+                header('Location: ?p=viewAddArticle');
+            }
+
         }
         else
         {
@@ -286,6 +351,8 @@ class Controller
 
     public function deleteArticle($articleId)
     {
+        $this->entityManager = require (dirname(__DIR__,2).'/config/bootstrap.php');
+        $this->articleRepository = $this->entityManager->getRepository(Article::class);
         $article = $this->articleRepository->find($articleId);
 
         $this->entityManager->remove($article);
@@ -294,11 +361,15 @@ class Controller
         $_SESSION['returnMessage'] = 'Votre article a bien été supprimé';
         $_SESSION['colorMessage'] = 'success';
 
-        header('Location: ?p=homeBack');
+        header('Location: ?p=homeBack&page=1');
     }
 
     public function addComment($articleId)
     {
+        $this->entityManager = require (dirname(__DIR__,2).'/config/bootstrap.php');
+        $this->articleRepository = $this->entityManager->getRepository(Article::class);
+        $this->commentRepository = $this->entityManager->getRepository(Comment::class);
+        $this->userRepository = $this->entityManager->getRepository(User::class);
         $article = $this->articleRepository->find($articleId);
         $user = $this->userRepository->find($_SESSION['id']);
 
@@ -326,6 +397,9 @@ class Controller
 
     public function reportComment($articleId, $commentId)
     {
+        $this->entityManager = require (dirname(__DIR__,2).'/config/bootstrap.php');
+        $this->articleRepository = $this->entityManager->getRepository(Article::class);
+        $this->commentRepository = $this->entityManager->getRepository(Comment::class);
         $article = $this->articleRepository->find($articleId);
         $comment = $this->commentRepository->find($commentId);
 
@@ -338,6 +412,8 @@ class Controller
 
     public function viewReportComment()
     {
+        $this->entityManager = require (dirname(__DIR__,2).'/config/bootstrap.php');
+        $this->commentRepository = $this->entityManager->getRepository(Comment::class);
         $comments = $this->commentRepository->findBy(['report' => 1]);
         $reportComment = count($comments);
 
@@ -350,6 +426,8 @@ class Controller
 
     public function validReportComment($commentId)
     {
+        $this->entityManager = require (dirname(__DIR__,2).'/config/bootstrap.php');
+        $this->commentRepository = $this->entityManager->getRepository(Comment::class);
         $comment = $this->commentRepository->find($commentId);
         
 
@@ -369,6 +447,8 @@ class Controller
 
     public function deleteReportComment($commentId)
     {
+        $this->entityManager = require (dirname(__DIR__,2).'/config/bootstrap.php');
+        $this->commentRepository = $this->entityManager->getRepository(Comment::class);
         $comment = $this->commentRepository->find($commentId);
 
         $this->entityManager->remove($comment);

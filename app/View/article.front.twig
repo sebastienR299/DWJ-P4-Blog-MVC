@@ -11,10 +11,10 @@
         <div class="separator_article"></div>
 
         <div class="bloc_article shadow">
-        <img src="/images/header.jpg" alt="" class="img-profil"/>
+        <img src="/images/uploads/{{row.pictureAlt}}" alt="" class="img-profil"/>
             <div class="items_article">
                 <h4 class="title_article"><a href="#">{{ row.title }}</a></h4>
-                <p class="p_article">{{row.content}}</p>
+                <p class="p_article">{{row.content|raw}}</p>
             </div>
             <div class="btn_article">
                 {% for user in users %}

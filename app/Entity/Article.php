@@ -3,10 +3,12 @@
 
 namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
+use App\Repository\ArticleRepository;
 use Doctrine\ORM\Mapping\{Column,Entity,Id,ManyToOne,OneToMany};
 
+// (repositoryClass="App\Repository\ArticleRepository")
 /**
- * @Entity
+ * @Entity(repositoryClass="App\Repository\ArticleRepository")
  * @Table(name="article")
  */
 class Article

@@ -47,11 +47,19 @@
             <div class="bloc_article_back shadow">
                 <span><a href="?p=deleteArticle&id={{article.id}}" onclick="return confirm('Confirmez-vous la suppression ?');">&times;</a></span>
                 <h4><a href="?p=articleBack&id={{article.id}}">{{ article.title }}</a></h4>
-                <p>{{ article.content|u.truncate(400, '...') }}</p>
+                <p id="article_container" class="p_article">{{ article.content|u.truncate(300, '...')|raw }}</p>
             </div>
         </div>
 
     {% endfor %}
+
+    <nav aria-label="...">
+        <ul class="pagination pagination-lg justify-content-center">
+            {% for i in 1..nbPages %}
+            <li class="page-item {% if i == page %}active{% endif %}"><a class="page-link" href="?p=homeBack&page={{i}}">{{i}}</a></li>
+            {% endfor %}
+        </ul>
+    </nav>
 
     </div>
 
