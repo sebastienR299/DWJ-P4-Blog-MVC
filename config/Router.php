@@ -2,18 +2,24 @@
 # config/Router.php
 
 namespace App\config;
-use App\Controller\Controller;
-use AltoRouter;
+
+use App\Controller\ArticleController;
+use App\Controller\CommentController;
+use App\Controller\UserController;
 use Exception;
 
 class Router
 {
 
-    private $controller;
+    private $ArticleController;
+    private $UserController;
+    private $CommentController;
 
     public function __construct()
     {
-        $this->controller = new Controller();
+        $this->ArticleController = new ArticleController();
+        $this->UserController = new UserController();
+        $this->CommentController = new CommentController();
     }
 
     public function run()
@@ -25,83 +31,83 @@ class Router
             switch ($_GET['p'])
             {
                 case "home" : 
-                    $this->controller->getArticles($_GET['page']);
+                    $this->ArticleController->getArticles($_GET['page']);
                 break;
 
                 case "homeBack" :
-                    $this->controller->getArticles($_GET['page'], true);
+                    $this->ArticleController->getArticles($_GET['page'], true);
                 break;
 
                 case "viewAddArticle" :
-                    $this->controller->viewAddArticle();
+                    $this->ArticleController->viewAddArticle();
                 break;
 
                 case "viewUpdateArticle" :
-                    $this->controller->viewUpdateArticle();
+                    $this->ArticleController->viewUpdateArticle();
                 break;
 
                 case "addArticle" : 
-                    $this->controller->addArticle();
+                    $this->ArticleController->addArticle();
                 break;
 
                 case "deleteArticle" :
-                    $this->controller->deleteArticle($_GET['id']);
+                    $this->ArticleController->deleteArticle($_GET['id']);
                 break;
 
                 case "article" : 
-                    $this->controller->getArticle($_GET['id']);
+                    $this->ArticleController->getArticle($_GET['id']);
                 break;
 
                 case "articleBack" :
-                    $this->controller->getArticle($_GET['id'], true);
+                    $this->ArticleController->getArticle($_GET['id'], true);
                 break;
 
                 case "articleBackUpdate" :
-                    $this->controller->getArticleUpdate($_GET['id']);
+                    $this->ArticleController->getArticleUpdate($_GET['id']);
                 break;
 
                 case "articleUpdateSave" :
-                    $this->controller->setArticleUpdateSave($_GET['id']);
+                    $this->ArticleController->setArticleUpdateSave($_GET['id']);
                 break;
 
                 case "addComment" :
-                    $this->controller->addComment($_GET['id'], $_POST['content']);
+                    $this->CommentController->addComment($_GET['id'], $_POST['content']);
                 break;
 
                 case "reportComment" :
-                    $this->controller->reportComment($_GET['id'], $_GET['idComment']);
+                    $this->CommentController->reportComment($_GET['id'], $_GET['idComment']);
                 break;
 
                 case "viewReportComment" :
-                    $this->controller->viewReportComment();
+                    $this->CommentController->viewReportComment();
                 break;
 
                 case "validReport" :
-                    $this->controller->validReportComment($_GET['id']);
+                    $this->CommentController->validReportComment($_GET['id']);
                 break;
 
                 case "deleteReport" :
-                    $this->controller->deleteReportComment($_GET['id']);
+                    $this->CommentController->deleteReportComment($_GET['id']);
                 break;
 
                 case "connexion" :
-                    $this->controller->login();
+                    $this->UserController->login();
                 break;
 
                 case "inscription" : 
-                    $this->controller->getInscription();
+                    $this->UserController->getInscription();
                 break;
 
                 case "register" : 
-                    $this->controller->register();
+                    $this->UserController->register();
                 break;
 
                 case "signIn" : 
-                    $this->controller->signIn();
+                    $this->UserController->signIn();
                 break;
 
                 case "logout" :
-                    $this->controller->logout();
+                    $this->UserController->logout();
                 break;
 
                 case "error404" :
@@ -113,7 +119,7 @@ class Router
         }
         else
         {
-            $this->controller->getArticles($_GET['page']);
+            $this->ArticleController->getArticles($_GET['page'] = 1, false);
         } 
         
     }
