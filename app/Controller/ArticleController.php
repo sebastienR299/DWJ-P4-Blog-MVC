@@ -16,10 +16,10 @@ class ArticleController extends Controller
      * @param boolean $isAdmin -> Vérifie si il s'agit d'un compte administrateur
      * @return void
      */
-    public function getArticles(int $page, $isAdmin = false)
+    public function getArticles(int $page = 1, $isAdmin = false)
     {
         // Nombre d'articles par page
-        $perPage = 3;
+        $perPage = 4;
         // Resultat minimum
         $resultMin = ($page*$perPage)-$perPage;
         // Resultat maximum
@@ -37,9 +37,6 @@ class ArticleController extends Controller
         // Calcule du nombre de page en fonction du nombre d'article
         $nbPages = ceil($nbArticles/$perPage);
 
-        $_SESSION['returnMessage'] = '';
-        $_SESSION['colorMessage'] = '';
-
         if ($isAdmin === false)
         {
             echo $this->twig->render('home.front.twig', [
@@ -53,9 +50,6 @@ class ArticleController extends Controller
         {
             $comments = $this->commentRepository->findAll();
             $reportComment = $this->commentRepository->findBy(['report' => 1]);
-
-            $_SESSION['returnMessage'] = '';
-            $_SESSION['colorMessage'] = '';
 
             echo $this->twig->render('home.back.twig', [
                 'users' => $users,
@@ -119,6 +113,7 @@ class ArticleController extends Controller
      */
     public function addArticle()
     {
+
         $user = $this->userRepository->find($_SESSION['id']);
 
         if (!empty($_POST['title']) && !empty($_POST['content']) && !empty($_FILES))
@@ -132,16 +127,12 @@ class ArticleController extends Controller
             $allowExtensions = array(".jpg", ".jpeg", ".png");
             $file_error = $_FILES["pictureUrl"]["error"];
 
-            if($file_error == 0 )
+            if($file_error == 0 && in_array($file_extension, $allowExtensions))
             {
-                if(in_array($file_extension, $allowExtensions)) {
-                
+   
                     if(move_uploaded_file($file_tmp_name, $target_file)) {
                         echo "Fichier envoyé avec succès";
                     }
-                } else {
-                    echo "Désolé ce type de fichier n'est pas pris en charge";
-                }
 
                 $article = new Article();
                 $article->setCreatedAt(new DateTime(date('d-m-Y')));
@@ -155,25 +146,25 @@ class ArticleController extends Controller
                 $this->entityManager->persist($user);
                 $this->entityManager->flush();
     
-                $_SESSION['returnMessage'] = 'Votre article a bien été ajouté';
-                $_SESSION['colorMessage'] = 'success';
-    
+                $_SESSION['flash'] = 'Votre article a bien été ajouté';
+                $_SESSION['color'] = 'success';
                 header('Location: ?p=homeBack&page=1');
             }
-            else
+            elseif ($file_error != 0)
             {
-                $_SESSION['returnMessage'] = 'Désolé, les données des champs sont incorrects';
-                $_SESSION['colorMessage'] = 'danger';
-
+                $_SESSION['flash'] = "L'image est trop volumineuse (Maximum 4Mo)";
+                $_SESSION['color'] = 'danger';
+                header('Location: ?p=viewAddArticle');
+            } else {
+                $_SESSION['flash'] = "Fichier non pris en charge (uniquement .jpg - .jpeg - .png)";
+                $_SESSION['color'] = 'danger';
                 header('Location: ?p=viewAddArticle');
             }
-
         }
         else
         {
-            $_SESSION['returnMessage'] = 'Désolé, tout les champs ne sont pas remplis';
-            $_SESSION['colorMessage'] = 'danger';
-
+            $_SESSION['flash'] = 'Désolé, tout les champs ne sont pas remplis';
+            $_SESSION['color'] = 'danger';
             header('Location: ?p=viewAddArticle');
         }
     }
@@ -191,8 +182,8 @@ class ArticleController extends Controller
         $this->entityManager->remove($article);
         $this->entityManager->flush();
 
-        $_SESSION['returnMessage'] = 'Votre article a bien été supprimé';
-        $_SESSION['colorMessage'] = 'success';
+        $_SESSION['flash'] = 'Votre article a bien été supprimé';
+        $_SESSION['color'] = 'success';
 
         header('Location: ?p=homeBack&page=1');
     }
@@ -230,15 +221,50 @@ class ArticleController extends Controller
     public function setArticleUpdateSave(int $articleId)
     {
         $article = $this->articleRepository->find($articleId);
-        $article->setTitle($_POST['title']);
-        $article->setContent($_POST['content']);
-        $this->entityManager->persist($article);
-        $this->entityManager->flush();
 
-        $_SESSION['returnMessage'] = 'Votre article a bien été modifié';
-        $_SESSION['colorMessage'] = 'success';
+        if(!empty($_FILES)) {
+            $name = pathinfo($_FILES["pictureUrl"]["name"]);
+            $file_name = md5($name["filename"]) . "." . $name["extension"];
+            $file_tmp_name = $_FILES["pictureUrl"]["tmp_name"];
+            $target_file = dirname(__DIR__,2)."/public/images/uploads/" . $file_name;
+            $file_extension = strrchr($file_name, ".");
+            $allowExtensions = array(".jpg", ".jpeg", ".png");
+            $file_error = $_FILES["pictureUrl"]["error"];
 
-        header('Location: ?p=articleBack&id=' . $article->getId());
+            if($file_error == 0 && in_array($file_extension, $allowExtensions)) {
+                if(move_uploaded_file($file_tmp_name, $target_file)) {
+                    echo "Fichier envoyé avec succès";
+                }
+                $article->setPictureUrl($file_name);
+                $article->setPictureAlt($file_name);
+            } 
+            elseif($file_error != 0) {
+                $_SESSION['flash'] = "L'image est trop volumineuse (Maximum 4Mo)";
+                $_SESSION['color'] = 'danger';
+                header('Location: ?p=articleBack&id=' . $article->getId());
+            } 
+            else {
+                $_SESSION['flash'] = "Fichier non pris en charge (uniquement .jpg - .jpeg - .png)";
+                $_SESSION['color'] = 'danger';
+                header('Location: ?p=articleBack&id=' . $article->getId());
+            }
+        }
+
+            if(!empty($_POST['title']) && !empty($_POST['content'])) {
+                $article->setTitle($_POST['title']);
+                $article->setContent($_POST['content']);
+                $this->entityManager->persist($article);
+                $this->entityManager->flush();
+
+                $_SESSION['flash'] = 'Votre article a bien été modifié';
+                $_SESSION['color'] = 'success';
+                header('Location: ?p=articleBack&id=' . $article->getId());
+            }
+            else {
+                $_SESSION['flash'] = "Désolé, tout les champs ne sont pas remplis";
+                $_SESSION['color'] = 'danger';
+                header('Location: ?p=articleBack&id=' . $article->getId());
+            }
     }
 
 }

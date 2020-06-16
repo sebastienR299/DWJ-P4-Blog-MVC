@@ -2,6 +2,7 @@
 # app/Controller/UserController.php
 
 namespace App\Controller;
+
 use App\Entity\User;
 
 class UserController extends Controller
@@ -18,48 +19,49 @@ class UserController extends Controller
     }
 
     /**
-     * Connexion
+     * Vérification avant connection de l'utilisateur
      *
+     * @param [type] $email -> Adresse e-mail reçu via l'utilisateur
+     * @param [type] $password -> Mot de passe reçu via l'utilisateur
      * @return void
      */
-    public function signIn()
+    public function signIn($email, $password)
     {
-        $users = $this->userRepository->findAll();
 
-        foreach($users as $user)
+        // Vérifie que les champs ne sont pas vides
+        if(!empty($email) && !empty($password))
         {
-            if (!empty($_POST['email']) && !empty($_POST['password']))
-            {
-                if ($_POST['email'] === $user->getEmail() && password_verify($_POST['password'], $user->getPassword()))
-                {
-                    $_SESSION['logged'] = true;
-                    $_SESSION['id'] = $user->getId();
-                    $_SESSION['firstName'] = $user->getFirstName();
-                    $_SESSION['lastName'] = $user->getLastName();
-                    $_SESSION['email'] = $user->getEmail();
-                    $_SESSION['admin'] = $user->getAdmin();
+            // Recherche un utilisateur via l'adresse e-mail
+            $user = $this->userRepository->findBy([
+                "email" => $email,
+            ]);
 
-                    header('Location: ?p=home');
-                }
-                else
-                {
-                    $returnConnect = 'Désolé identifiant incorrect';
-                    $colorConnect = 'danger';
-                    echo $this->twig->render('connexion.front.twig', [
-                        'returnConnect' => $returnConnect,
-                        'colorConnect' => $colorConnect
-                    ]);
-                }
+            // Vérifie si l'adresse e-mail est valide et si le mot de passe correspond
+            if($email === $user[0]->getEmail() && password_verify($password, $user[0]->getPassword()))
+            {
+                $_SESSION['logged'] = true;
+                $_SESSION['id'] = $user[0]->getId();
+                $_SESSION['firstName'] = $user[0]->getFirstName();
+                $_SESSION['lastName'] = $user[0]->getLastName();
+                $_SESSION['email'] = $user[0]->getEmail();
+                $_SESSION['admin'] = $user[0]->getAdmin();
+
+                $_SESSION['flash'] = "Vous êtes à présent connecter";
+                $_SESSION['color'] = "success";
+                header('Location: ?p=home&page=1');
             }
             else
             {
-                $returnConnect = 'Veuillez remplir tout les champs';
-                $colorConnect = 'warning';
-                echo $this->twig->render('connexion.front.twig', [
-                    'returnConnect' => $returnConnect,
-                    'colorConnect' => $colorConnect
-                ]);
+                $_SESSION['flash'] = "Désolé identifiant incorrect";
+                $_SESSION['color'] = "warning";
+                header('Location: ?p=connexion#td_connexion');
             }
+        }
+        else
+        {
+            $_SESSION['flash'] = "Veuillez remplir tout les champs";
+            $_SESSION['color'] = "danger";
+            header('Location: ?p=connexion#td_connexion');
         }
     }
 
@@ -71,7 +73,7 @@ class UserController extends Controller
     public function logout()
     {
         session_destroy();
-        header('Location: ?p=home');
+        header('Location: ?p=home&page=1');
     }
 
     /**
@@ -103,12 +105,9 @@ class UserController extends Controller
                     if ($_POST['email'] === $user->getEmail())
                     {
                         $alreadyExist = true;
-                        $returnMessage = 'Désolé cette adresse e-mail est déjà utilisée';
-                        $colorMessage = 'danger';
-                        echo $this->twig->render('inscription.front.twig', [
-                            'returnMessage' => $returnMessage,
-                            'colorMessage' => $colorMessage
-                        ]);
+                        $_SESSION['flash'] = 'Désolé cette adresse e-mail est déjà utilisée';
+                        $_SESSION['color'] = 'danger';
+                        header('Location: ?p=inscription');
                     }
                     elseif ($alreadyExist === true)
                     {
@@ -121,33 +120,24 @@ class UserController extends Controller
                         $this->entityManager->persist($user);
                         $this->entityManager->flush();
 
-                        $returnMessage = 'Vous êtes désormais inscrit ! Vous pouvez vous connecter';
-                        $colorMessage = 'success';
-                        echo $this->twig->render('home.front.twig', [
-                            'returnMessage' => $returnMessage,
-                            'colorMessage' => $colorMessage
-                        ]);
+                        $_SESSION['flash'] = 'Vous êtes désormais inscrit ! Vous pouvez vous connecter';
+                        $_SESSION['color'] = 'success';
+                        header('Location: ?p=home&page=1');
                     }
                 }
             }
             else
             {
-                $returnMessage = 'Veuillez saisir deux mots de passe identiques';
-                $colorMessage = 'warning';
-                echo $this->twig->render('inscription.front.twig', [
-                    'returnMessage' => $returnMessage,
-                    'colorMessage' => $colorMessage
-                ]);
+                $_SESSION['flash'] = 'Veuillez saisir deux mots de passe identiques';
+                $_SESSION['color'] = 'warning';
+                header('Location: ?p=inscription');
             }
         }
         else
         {
-            $returnMessage = 'Veuillez remplir tout les champs indiqués';
-            $colorMessage = 'warning';
-            echo $this->twig->render('inscription.front.twig', [
-                'returnMessage' => $returnMessage,
-                'colorMessage' => $colorMessage
-            ]);
+            $_SESSION['flash'] = 'Veuillez remplir tout les champs indiqués';
+            $_SESSION['color'] = 'danger';
+            header('Location: ?p=inscription');
         }
     }
 

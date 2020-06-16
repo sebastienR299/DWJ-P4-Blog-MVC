@@ -15,7 +15,7 @@ class CommentController extends Controller
      * @param integer $articleId -> Récupération de l'ID de l'article
      * @return void
      */
-    public function addComment(int $articleId)
+    public function addComment(int $articleId, $isAdmin = false)
     {
         $article = $this->articleRepository->find($articleId);
         $user = $this->userRepository->find($_SESSION['id']);
@@ -36,9 +36,18 @@ class CommentController extends Controller
             $this->entityManager->persist($article);
             $this->entityManager->persist($user);
             $this->entityManager->flush();
-        }
 
-        header('Location: ?p=article&id=' . $article->getId());
+            $_SESSION['flash'] = "Votre commentaire à bien été ajouté";
+            $_SESSION['color'] = "success";
+            header('Location: ?p=article&id=' . $article->getId() . '#write-comment');
+        }
+        else
+        {
+            $_SESSION['flash'] = "Veuillez saisir un message";
+            $_SESSION['color'] = "danger";
+            header('Location: ?p=article&id=' . $article->getId() . '#write-comment');
+        }
+        
     }
 
     /**
@@ -57,6 +66,8 @@ class CommentController extends Controller
         $this->entityManager->persist($comment);
         $this->entityManager->flush();
 
+        $_SESSION['flash'] = "Le commentaire a bien été signaler";
+        $_SESSION['color'] = "info";
         header('Location: ?p=article&id=' . $article->getId());
     }
 
@@ -90,13 +101,9 @@ class CommentController extends Controller
         $this->entityManager->persist($comment);
         $this->entityManager->flush();
 
-        $returnMessage = 'Le commentaire à bien été validé';
-        $colorMessage = 'success';
-
-        echo $this->twig->render('report.back.twig', [
-            'returnMessage' => $returnMessage,
-            'colorMessage' => $colorMessage,
-        ]);
+        $_SESSION['flash'] = 'Le commentaire à bien été validé';
+        $_SESSION['color'] = 'success';
+        header('Location: ?p=viewReportComment');
     }
 
     /**
@@ -112,13 +119,9 @@ class CommentController extends Controller
         $this->entityManager->remove($comment);
         $this->entityManager->flush();
 
-        $returnMessage = 'Le commentaire à bien été supprimé';
-        $colorMessage = 'success';
-
-        echo $twig->render('report.back.twig', [
-            'returnMessage' => $returnMessage,
-            'colorMessage' => $colorMessage,
-        ]);
+        $_SESSION['flash'] = 'Le commentaire à bien été supprimé';
+        $_SESSION['color'] = 'success';
+        header('Location: ?p=viewReportComment');
     }
 
 }

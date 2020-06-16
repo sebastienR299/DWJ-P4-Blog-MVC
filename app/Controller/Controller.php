@@ -3,9 +3,9 @@
 
 namespace App\Controller;
 
+use App\Entity\User;
 use App\Entity\Article;
 use App\Entity\Comment;
-use App\Entity\User;
 
 abstract class Controller
 {
@@ -15,6 +15,7 @@ abstract class Controller
     protected $commentRepository;
     protected $userRepository;
     protected $twig;
+    protected $flash;
 
     public function __construct()
     {
