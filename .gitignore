@@ -1,6 +1,7 @@
 .cache/
 coverage/
 src/*
+public/images/uploads/*
 dist/*
 !dist/index.html
 node_modules/
