@@ -1,0 +1,45 @@
+{% extends 'template.back.twig' %}
+
+{% block title %}<title>Tabeau de bord</title>{% endblock %}
+
+{% block content %}
+
+    {#-- MESSAGE FLASH --#}
+    {% if session.flash is defined %}
+        <div id="flashMessage" class="bg-{{session.color}}">{{session.flash}}</div>
+    {% endif %}
+
+    {# AFFICHAGE DES ARTICLES #}
+    <div class="container-fluid articles-back-container-fluid">
+
+    {# BLOC ARTICLES #}
+    {% for article in articles %}
+        <div class="container articles-back-container">
+            <div class="bloc_article_back shadow">
+            <div class="title-back-container">
+                <h4 class="title_back">{{article.title}}</h4>
+            </div>
+            <div class="link-back">
+                <a class="btn-view" href="/articleBack/{{article.title|replace({' ' : '-'})}}/{{article.id}}"><i class="fas fa-eye"></i> Lire</a>
+                <a class="btn-write" href="/articleBackUpdate/{{article.id}}"><i class="fas fa-pen"></i> Modifier</a>
+                <a class="btn-delete" href="/deleteArticle/{{article.id}}" onclick="return confirm('Voulez-vous vraiment supprimer l'article {{article.title}} ?');"><i class="fas fa-trash-alt"></i> Supprimer</a>
+            </div>
+            </div>
+        </div>
+    {% endfor %}
+
+    </div>
+
+    {#-- PAGINATION --#}
+    <nav aria-label="..." class="nav-pagination">
+        <ul class="home_pagination">
+            {% for i in 1..nbPages %}
+            <li class="page-item {% if i == page %}active{% endif %}"><a class="page-link" href="/homeBack/{{i}}">{{i}}</a></li>
+            {% endfor %}
+        </ul>
+    </nav>
+
+{#-- FONCTION TWIG SUPPRESSION VARIABLE MESSAGE FLASH --#}
+{{flashMessage()}}
+
+{% endblock %}

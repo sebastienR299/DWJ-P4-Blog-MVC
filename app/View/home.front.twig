@@ -1,0 +1,54 @@
+{% extends 'template.front.twig' %}
+
+{% block title %}<title>Accueil</title>{% endblock %}
+
+{% block content %}
+
+    {% if session.flash is defined %}
+    <div id="flashMessage" class="bg-{{session.color}}">{{session.flash}}</div>
+    {% endif %}
+
+    <div class="title-bloc-page">
+        <h3><i class="fas fa-feather-alt"></i></h3>
+    </div>
+
+    <div class="container articles-container">
+
+    {% for article in articles %}
+
+        <div id="post" class="bloc-article shadow">
+
+        <div class="picture-container">
+                <img class="img-fluid" src="/images/uploads/{{article.pictureAlt}}" alt="{{article.title}}" class="picture-article"/>
+        </div>
+
+        <div class="items-article">
+            <h3 class="item-title">{{article.title}}</h3>
+            <hr/>
+            <div class="items-bottom">
+                <a class="item-btn" href="/article/{{article.title|replace({' ' : '-'})}}/{{article.id}}">Voir l'article</a>
+                <a class="item-info" href="#"><i class="fas fa-info-circle"></i></a>
+            </div>
+            <div class="items-date">
+                <p class="item-day">{{article.createdAt|date('d')}}</p>
+                <p class="item-months">{{article.createdAt|date('M')}}</p>
+            </div>
+        </div>
+
+        </div>
+
+    {% endfor %}
+
+    </div>
+
+    <nav aria-label="..." class="nav-pagination">
+        <ul class="home_pagination">
+            {% for i in 1..nbPages %}
+            <li class="page-item {% if i == page %}active{% endif %}"><a class="page-link" href="/home/{{i}}">{{i}}</a></li>
+            {% endfor %}
+        </ul>
+    </nav>
+
+{{flashMessage()}}
+
+{% endblock %}

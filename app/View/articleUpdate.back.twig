@@ -1,0 +1,40 @@
+{% extends 'template.back.twig' %}
+
+{% block content %}
+
+    {% if session.flash is defined %}
+    <div id="flashMessage" class="bg-{{session.color}}">{{session.flash}}</div>
+    {% endif %}
+
+    <div class="container create-article-container">
+
+    {% for row in article %}
+
+    <form method="post" id="form-article" action="/articleUpdateSave/{{row.id}}" class="col-md-8 mx-auto mt-5" enctype="multipart/form-data">
+            <div class="form-group items-create-title shadow">
+                <label for="title">Titre de l'article</label>
+                <input value="{{row.title}}" type="text" class="form-control" name="title" id="title-back" aria-describedby="titleHelp">
+            </div>
+            <div class="form-group items-create-content shadow">
+                <label for="content">Contenu de l'article</label>
+                <textarea name="content" id="content" rows="10">{{row.content}}</textarea>
+            </div>
+            <div class="form-group upload-image shadow">
+                <label for="pictureUrl" class="label-picture">Choissisez une image <i class="fas fa-cloud-upload-alt"></i></label>
+                <input type="hidden" name="MAX_FILE_SIZE" value="4000000" />
+                <input type="file" class="form-control-file img-post" id="pictureUrl" name="pictureUrl">
+                <div><small><em>Taille maximum : 4Mo</em></small></div>
+                <div><small><em>Ratio conseillé : 4:3</em></small></div>
+                <img class="" id="preview" src="/images/uploads/{{row.pictureAlt}}" />
+            </div>
+            <button type="submit" class="btn btn-primary btn-lg d-block mx-auto">Valider</button>
+    </form>
+
+
+    {% endfor %}
+
+    </div>
+
+    {{flashMessage()}}
+
+{% endblock %}
