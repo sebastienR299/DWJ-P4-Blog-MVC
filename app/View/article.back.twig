@@ -1,44 +1,56 @@
 {% extends 'template.back.twig' %}
 
+{% block title %}<title>{{title}}</title>{% endblock %}
+
 {% block content %}
 
-    <div class="container">
+    {% if session.flash is defined %}
+        <div id="flashMessage" class="bg-{{session.color}}">{{session.flash}}</div>
+    {% endif %}
 
-        <h1 class="text-center p-4">Publications</h1>
+    <div class="container article-view-back">
 
     {% for row in article %}
 
-    {% block title %}<title>{{ row.title }}</title>{% endblock %}
+        <div class="bloc_article_single shadow">
+        <img src="/images/uploads/{{row.pictureAlt}}" alt="" class="img-profil"/>
+            <div class="items_article">
+                <h4 class="title_article_single">{{ row.title }}</h4>
+                <p class="p_article_single">{{row.content|raw}}</p>
+            </div>
+            <div class="btn_article">
+                <a class="btn_single" href="/homeBack/1">Retour aux articles</a>
+                <a class="btn_single" href="/articleBackUpdate/{{row.id}}">Modifier</a>
+                <p class="date_single">{{article.createdAt | date('d-m-Y')}}</p>
+            </div>
+        </div>
 
-        <h4>{{ row.title }}</h4>
-        <p>{{ row.content }}</p>
-        <a href="?p=articleBackUpdate&id={{row.id}}">Modifier</a>
-
-    <hr class="m-4" />
 
     {% for comment in comments %}
 
-    <div class="card">
-    <h5>{{comment.firstName}} {{comment.lastName}}</h5>
-    <p class="text-justify p-4">{{comment.content}}<p>
-    <small><em>{{comment.createdAt|date("d-F-Y")}}</em></small>
-    </div>
-
-    {% endfor %}
-
-    <hr class="m-4"/>
-    {% if session.logged == true %}
-    <form method="POST" action="?p=addComment&id={{row.id}}">
-        <div class="form-group">
-            <label for="content">Message</label>
-            <textarea class="form-control form-control-lg" id="_content-comment" name="content" rows="5"></textarea>
+    <div class="bloc_comment shadow-sm">
+        <h5 class="title_comment">{{comment.firstName}} {{comment.lastName}}</h5>
+            <p class="p_comment">{{comment.content}}<p>
+        <div class="bloc_bottom_comment">
+            <p class="date_comment">{{comment.createdAt|date("d-m-Y")}}</p>
+            {% if session.logged == true %}
+            <a href="?p=reportComment&id={{row.id}}&idComment={{comment.id}}#post">
+            {% if comment.report == 0 %}
+            <span class="icon_comment" style="color:#333333"><i class="fas fa-exclamation-triangle"></i></span>
+            {% else %}
+            <span class="icon_comment" style="color:#dc3545"><i class="fas fa-exclamation-triangle"></i></span>
+            {% endif %}
+            </a>
+            {% endif %}
         </div>
-        <button type="submit" class="btn btn-primary btn-lg">Ajouter</button>
-    </form>
-    {% endif %}
+    </div>
+
+    {% endfor %}
 
     </div>
 
     {% endfor %}
+
+{{flashMessage()}}
 
 {% endblock %}

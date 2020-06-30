@@ -2,28 +2,20 @@
 
 {% block content %}
 
-    <div class="separator_article"></div>
+    <div class="container report-comments-container">
 
-    <div class="container">
-
-    {# MESSAGE DE RETOUR #}
-    {% if returnMessage is not empty %}
-        <div class="col-8 mx-auto text-center alert alert-{{colorMessage}}" role="alert">
-            {{returnMessage}}
-        </div>
-        {% if comments|length > 0 %}
-            <div class="text-center my-4">
-                <a href="?p=viewReportComment" class="btn btn-outline-success">Retour vers la modération</a>
-            </div>
-        {% endif %}
+    {% if session.flash is defined %}
+        <div id="flashMessage" class="bg-{{session.color}}">{{session.flash}}</div>
     {% endif %}
 
-    {% if reportComment|length == 0 %}
-        <div class="col-8 mx-auto text-center alert alert-secondary" role="alert">
+    {# MESSAGE DE RETOUR #}
+
+    {% if reportComment == 0 %}
+        <div class="col-8 mx-auto text-center alert alert-secondary no-report-comment" role="alert">
             Aucun commentaire en attente de modération
         </div>
         <div class="text-center my-4">
-            <a href="?p=homeBack" class="btn btn-outline-success">Retour au Dashboard</a>
+            <a href="/homeBack/1" class="btn_single_back">Retour au Dashboard</a>
         </div>
     {% endif %}
 
@@ -34,13 +26,15 @@
             <p class="p_comment">{{comment.content}}<p>
         <div class="bloc_bottom_comment">
             <p class="date_comment">{{comment.createdAt|date("d-F-Y")}}</p>
-            <a href="?p=validReport&id={{comment.id}}"><span class="material-icons" style="color:#28a745; font-weight:bold">done</span></a>
-            <a href="?p=deleteReport&id={{comment.id}}" onclick="return confirm('Confirmez-vous la suppression ?');"><span class="material-icons" style="color:#dc3545; font-weight:bold">block</span></a>
+            <a href="/validReport/{{comment.id}}"><span class="material-icons" style="color:#28a745; font-weight:bold">done</span></a>
+            <a href="/deleteReport/{{comment.id}}" onclick="return confirm('Confirmez-vous la suppression ?');"><span class="material-icons" style="color:#dc3545; font-weight:bold">block</span></a>
         </div>
     </div>
 
     {% endfor %}
 
     </div>
+
+{{flashMessage()}}
 
 {% endblock %}

@@ -1,16 +1,4 @@
-# On suit les liens symboliques 
-# Options +FollowSymlinks 
-# Activation du mod rewrite d'Apache 
 RewriteEngine On
 
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
-
-# RewriteRule ^?p=$ /$1
-# RewriteRule ^(.*)$ p$1
-# RewriteRule ^article-([0-9]+)-([0-9]+)$ /index.php?article-$1
-
-# Article sans numéro de page :
-# RewriteRule ^article-([0-9]+)-([0-9]+)$   /index.php?p=article-$1 [L]
-
-# ErrorDocument 404 /index.php?p=error404

@@ -4,40 +4,51 @@
 
 {% block content %}
 
-        <h1 class="text-center p-4">Publications</h1>
+    {% if session.flash is defined %}
+    <div id="flashMessage" class="bg-{{session.color}}">{{session.flash}}</div>
+    {% endif %}
+
+    <div class="title-bloc-page">
+        <h3><i class="fas fa-feather-alt"></i></h3>
+    </div>
+
+    <div class="container articles-container">
 
     {% for article in articles %}
 
-        <div class="bloc_article shadow">
-        <img src="/images/uploads/{{article.pictureAlt}}" alt="" class="img-profil"/>
-            <div class="items_article">
-                <h4 class="title_article"><a href="?p=article&id={{article.id}}">{{ article.title }}</a></h4>
-                <p class="p_article">{{ article.content|u.truncate(300, '...')|raw }}</p>
+        <div id="post" class="bloc-article shadow">
+
+        <div class="picture-container">
+                <img class="img-fluid" src="/images/uploads/{{article.pictureAlt}}" alt="{{article.title}}" class="picture-article"/>
+        </div>
+
+        <div class="items-article">
+            <h3 class="item-title">{{article.title}}</h3>
+            <hr/>
+            <div class="items-bottom">
+                <a class="item-btn" href="/article/{{article.title|replace({' ' : '-'})}}/{{article.id}}">Voir l'article</a>
+                <a class="item-info" href="#"><i class="fas fa-info-circle"></i></a>
             </div>
-            <div class="btn_article">
-            {% for user in users %}
-                <p>{{user.firstName}} {{user.lastName}}</p>
-            {% endfor %}
-                <p>{{article.createdAt | date('d-m-Y')}}</p>
+            <div class="items-date">
+                <p class="item-day">{{article.createdAt|date('d')}}</p>
+                <p class="item-months">{{article.createdAt|date('M')}}</p>
             </div>
+        </div>
+
         </div>
 
     {% endfor %}
 
-    {% if returnMessage is defined %}
-
-    <div class="alert alert-{{colorMessage}}" role="alert">
-        {{returnMessage}}
     </div>
 
-    {% endif %}
-
-    <nav aria-label="...">
-        <ul class="pagination pagination-lg justify-content-center">
+    <nav aria-label="..." class="nav-pagination">
+        <ul class="home_pagination">
             {% for i in 1..nbPages %}
-            <li class="page-item {% if i == page %}active{% endif %}"><a class="page-link" href="?p=home&page={{i}}">{{i}}</a></li>
+            <li class="page-item {% if i == page %}active{% endif %}"><a class="page-link" href="/home/{{i}}">{{i}}</a></li>
             {% endfor %}
         </ul>
     </nav>
+
+{{flashMessage()}}
 
 {% endblock %}

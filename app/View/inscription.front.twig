@@ -4,36 +4,42 @@
 
 {% block content %}
 
-<form method="post" action="?p=register" class="mx-auto col-lg-4 col-sm-8 mt-5" autocomplete="off">
-    <div class="form-group">
-        <label for="firstName" class="ml-4">Prénom</label>
-        <input required type="text" class="form-control form-control-lg rounded-pill" name="firstName" id="firstName" aria-describedby="firstNameHelp">
+<div class="title-bloc-page">
+    <h3><i class="fas fa-user-plus"></i></h3>
+</div>
+
+<div class="container container_inscription">
+
+<form  class="bloc_inscription" method="post" action="?p=register" class="mx-auto col-lg-4 col-sm-8 mt-5" autocomplete="off">
+    <div class="form-group item">
+        <input required type="text" class="form-control form-control-lg" name="firstName" id="firstName" aria-describedby="firstNameHelp">
+        <label for="firstName" class="ml-4">Prénom <span>*</span></label>
     </div>
-    <div class="form-group">
-        <label for="lastName" class="ml-4">Nom</label>
-        <input required  type="text" class="form-control form-control-lg rounded-pill" name="lastName" id="lastName" aria-describedby="LastNameHelp">
+    <div class="form-group item">
+        <input required  type="text" class="form-control form-control-lg" name="lastName" id="lastName" aria-describedby="LastNameHelp">
+        <label for="lastName" class="ml-4">Nom <span>*</span></label>
     </div>
-    <div class="form-group">
-        <label for="email" class="ml-4">Email</label>
-        <input required  type="email" class="form-control form-control-lg rounded-pill" name="email" id="email" aria-describedby="emailHelp">
+    <div class="form-group item">
+        <input required  type="email" class="form-control form-control-lg" name="email" id="email" aria-describedby="emailHelp">
+        <label for="email" class="ml-4">Email <span>*</span></label>
     </div>
-    <div class="form-group">
-        <label for="password" class="ml-4">Mot de passe</label>
-        <input required  type="password" class="form-control form-control-lg rounded-pill" name="password" id="password">
+    <div class="form-group item">
+        <input required  type="password" class="form-control form-control-lg" name="password" id="password">
+        <label for="password" class="ml-4">Mot de passe <span>*</span></label>
     </div>
-    <div class="form-group">
-        <label for="passwordRepeat" class="ml-4">Mot de passe</label>
-        <input required  type="password" class="form-control form-control-lg rounded-pill" name="passwordRepeat" id="passwordRepeat">
+    <div class="form-group item">
+        <input required  type="password" class="form-control form-control-lg" name="passwordRepeat" id="passwordRepeat">
+        <label for="passwordRepeat" class="ml-4">Mot de passe <span>*</span></label>
     </div>
-    <button type="submit" class="btn btn-primary btn-lg d-block mx-auto mt-4 rounded-pill">Inscription</button>
+    <button type="submit" class="btn btn-primary btn-lg d-block mx-auto">Inscription</button>
 </form>
 
-{% if returnMessage is defined %}
-
-    <div class="alert alert-{{colorMessage}} col-6 rounded-pill text-center mx-auto mt-5" role="alert">
-        {{returnMessage}}
-    </div>
-
+{% if session.flash is defined %}
+    <div id="flashMessage" class="bg-{{session.color}}">{{session.flash}}</div>
 {% endif %}
+
+</div>
+
+{{flashMessage()}}
 
 {% endblock %}

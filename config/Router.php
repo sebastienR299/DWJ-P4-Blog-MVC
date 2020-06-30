@@ -8,6 +8,11 @@ use App\Controller\CommentController;
 use App\Controller\UserController;
 use Exception;
 
+use function GuzzleHttp\Psr7\str;
+
+define("URL", str_replace("index.php","",(isset($_SERVER["HTTPS"]) ? "https" : "http").
+"://$_SERVER[HTTP_HOST]$_SERVER[PHP_SELF]"));
+
 class Router
 {
 
@@ -25,17 +30,32 @@ class Router
     public function run()
     {
 
+        $url = explode("/", filter_var($_GET['p'], FILTER_SANITIZE_URL));
+
         if (isset($_GET['p']))
         {
 
-            switch ($_GET['p'])
+            switch ($url[0])
             {
                 case "home" : 
-                    $this->ArticleController->getArticles($_GET['page']);
+                    if(isset($url[1]) && ctype_digit($url[1])) {
+                        $this->ArticleController->getArticles($url[1]);
+                    } else {
+                        header('Location: /home/1');
+                    }
                 break;
 
                 case "homeBack" :
-                    $this->ArticleController->getArticles($_GET['page'], true);
+                    if($_SESSION['admin'] == 1) {
+                        if(isset($url[1]) && ctype_digit($url[1])) {
+                            $this->ArticleController->getArticles($url[1], true);
+                        } else {
+                            header('Location: /homeBack/1');
+                        }
+                    } else {
+                        header('Location: /home/1');
+                    }
+                    
                 break;
 
                 case "viewAddArticle" :
@@ -51,31 +71,78 @@ class Router
                 break;
 
                 case "deleteArticle" :
-                    $this->ArticleController->deleteArticle($_GET['id']);
+                    if($_SESSION['admin'] == 1) {
+                        if(isset($url[1]) && ctype_digit($url[1])) {
+                            $this->ArticleController->deleteArticle($url[1]);
+                        } else {
+                            header('Location: /homeBack/1');
+                        }
+                    } else {
+                        header('Location: /home/1');
+                    }
                 break;
 
-                case "article" : 
-                    $this->ArticleController->getArticle($_GET['id']);
+                case "article" :
+                    if(isset($url[1]) && isset($url[2]) && ctype_digit($url[2])) {
+                            $this->ArticleController->getArticle($url[2]);
+                    } else {
+                        header('Location: /home/1');
+                    }
                 break;
 
                 case "articleBack" :
-                    $this->ArticleController->getArticle($_GET['id'], true);
+                    if($_SESSION['admin'] == 1) {
+                        if(isset($url[1]) && isset($url[2]) && ctype_digit($url[2])) {
+                            $this->ArticleController->getArticle($url[2], true);
+                        } else {
+                            header('Location: /homeBack/1');
+                        }
+                    } else {
+                        header('Location: /home/1');
+                    }
+                    
                 break;
 
                 case "articleBackUpdate" :
-                    $this->ArticleController->getArticleUpdate($_GET['id']);
+                    if($_SESSION['admin'] == 1) {
+                        if(isset($url[1]) && ctype_digit($url[1])) {
+                            $this->ArticleController->getArticleUpdate($url[1]);
+                        } else {
+                            header('Location: /homeBack/1');
+                        }  
+                    } else {
+                        header('Location: /home/1');
+                    }
+                    
                 break;
 
                 case "articleUpdateSave" :
-                    $this->ArticleController->setArticleUpdateSave($_GET['id']);
+                    if($_SESSION['admin'] == 1) {
+                        if(isset($url[1]) && ctype_digit($url[1])) {
+                            $this->ArticleController->setArticleUpdateSave($url[1]);
+                        } else {
+                            header('Location: /homeBack/1');
+                        }
+                    } else {
+                        header('Location: /home/1');
+                    }
+                    
                 break;
 
                 case "addComment" :
-                    $this->CommentController->addComment($_GET['id'], $_POST['content']);
+                    if($_SESSION['logged'] === true) {
+                        if(isset($url[1]) && ctype_digit($url[1])) {
+                            $this->CommentController->addComment($url[1], $_POST['content'], false);
+                        }
+                    }
                 break;
-
+            
                 case "reportComment" :
-                    $this->CommentController->reportComment($_GET['id'], $_GET['idComment']);
+                    if($_SESSION['logged'] === true) {
+                        if(isset($url[1]) && isset($url[2]) && ctype_digit($url[1]) && ctype_digit($url[2])) {
+                            $this->CommentController->reportComment($url[1], $url[2]);
+                        }
+                    }
                 break;
 
                 case "viewReportComment" :
@@ -83,11 +150,19 @@ class Router
                 break;
 
                 case "validReport" :
-                    $this->CommentController->validReportComment($_GET['id']);
+                    if($_SESSION['admin'] == 1) {
+                        if(isset($url[1]) && ctype_digit($url[1])) {
+                            $this->CommentController->validReportComment($url[1]);
+                        }
+                    }
                 break;
 
                 case "deleteReport" :
-                    $this->CommentController->deleteReportComment($_GET['id']);
+                    if($_SESSION['admin'] == 1) {
+                        if(isset($url[1]) && ctype_digit($url[1])) {
+                            $this->CommentController->deleteReportComment($url[1]);
+                        }
+                    }
                 break;
 
                 case "connexion" :
@@ -103,7 +178,7 @@ class Router
                 break;
 
                 case "signIn" : 
-                    $this->UserController->signIn();
+                    $this->UserController->signIn($_POST['email'], $_POST['password']);
                 break;
 
                 case "logout" :
@@ -114,12 +189,12 @@ class Router
                     header('HTTP/1.0 404 not found');
                 break;
 
-                default: throw new Exception("La page n'existe pas");
+                default: $this->ArticleController->error404();
             }
         }
         else
         {
-            $this->ArticleController->getArticles($_GET['page'] = 1, false);
+            header('Location: /home/1');
         } 
         
     }

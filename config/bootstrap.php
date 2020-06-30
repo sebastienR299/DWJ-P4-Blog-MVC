@@ -15,12 +15,12 @@ $isDevMode = true;
 # Connection configuration
 $dbParams = array(
     'driver'   => 'pdo_mysql',
-    'host'     => 'localhost',
+    'host'     => 'db5000512480.hosting-data.io',
     'charset'  => 'utf8',
-    'user'     => 'root',
-    'password' => '',
-    'dbname'   => 'blog_mvc',
-    'port'     => '3308',
+    'user'     => 'dbu847385',
+    'password' => 'H5ed1ubg@',
+    'dbname'   => 'dbs491851',
+    'port'     => '3306',
 );
 
 $config = Setup::createAnnotationMetadataConfiguration($paths, $isDevMode);

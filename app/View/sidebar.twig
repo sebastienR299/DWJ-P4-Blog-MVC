@@ -1,19 +1,33 @@
     <button id="hamburger" class="hamburger hamburger--elastic" type="button">
-        <span class="hamburger-box">
-        <span class="hamburger-inner"></span>
-        </span>
+            <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+            </span>
     </button>
 
+    <h4 class="logo-header">Jean Forteroche <i class="fas fa-feather-alt"></i></h4>
+
     <div class="nav-menu" id="menu-sidebar">
+
         <div class="menu-title">
-            <a id="_t1" href="?p=home">Home</a>
-            <a id="_t2" href="?p=connexion">Login</a>
-            <a id="_t3" href="?p=inscription">Signin</a>
+
+        {% if session.logged == true %}
+        <div class="user-text-container">
+            <span><i class="fas fa-user"></i></span>
+            <h4 class="user-sidebar">{{session.firstName}} {{session.lastName}}</h4>
+        </div>
+        {% endif %}
+
+            <a id="link" class="link-mobile" href="/home/1"><i class="fas fa-home"></i> Home</a>
+            <a id="link" class="link-mobile" href="#"><i class="fas fa-info-circle"></i> A propos</a>
+            {% if session.logged == false %}
+            <a id="link" class="link-mobile" href="/connexion"><i class="fas fa-sign-in-alt"></i> Connexion</a>
+            <a id="link" class="link-mobile" href="/inscription"><i class="fas fa-user-plus"></i> Inscription</a>
+            {% endif %}
             {% if session.logged == true %}
-            <a id="_t4" href="?p=logout">Logout</a>
+            <a id="link" class="link-mobile" href="/logout"><i class="fas fa-sign-out-alt"></i> Déconnexion</a>
             {% endif %}
             {% if session.admin == 1 %}
-            <a id="_t5" href="?p=homeBack&page=1">Dashboard</a>
+            <a id="e6" class="link-mobile" href="/homeBack/1"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
             {% endif %}
         </div>
     </div>

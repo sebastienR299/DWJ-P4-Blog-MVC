@@ -4,63 +4,42 @@
 
 {% block content %}
 
-    {# AFFICHAGE DES STATISTIQUES #}
-    <div class="container-fluid container-back-stats shadow">
-
-        <div class="container">
-            <div class="item-1">
-                <p>nombre de publications</p>
-                <span>{{ articles|length }}</span>
-            </div>
-            <hr/>
-            <div class="item-1">
-                <p>nombre de commentaires</p>
-                <span>{{ comments|length }}</span>
-            </div>
-            <hr/>
-            <div class="item-1">
-                <p>nombre d'utilisateurs</p>
-                <span>{{ users|length }}</span>
-            </div>
-            <hr/>
-            <div class="item-1">
-                <p>Commentaires en attente de modération</p>
-                <span>{{ reportComment|length }}</span>
-            </div>
-        </div>
-
-    </div>
+    {#-- MESSAGE FLASH --#}
+    {% if session.flash is defined %}
+        <div id="flashMessage" class="bg-{{session.color}}">{{session.flash}}</div>
+    {% endif %}
 
     {# AFFICHAGE DES ARTICLES #}
-    <div class="container-fluid container-back-article">
-
-    {# MESSAGE DE RETOUR #}
-    {% if session.returnMessage is not empty %}
-        <div class="col-8 mx-auto text-center alert alert-{{session.colorMessage}}" role="alert">
-            {{session.returnMessage}}
-        </div>
-    {% endif %}
+    <div class="container-fluid articles-back-container-fluid">
 
     {# BLOC ARTICLES #}
     {% for article in articles %}
-        <div class="container">
+        <div class="container articles-back-container">
             <div class="bloc_article_back shadow">
-                <span><a href="?p=deleteArticle&id={{article.id}}" onclick="return confirm('Confirmez-vous la suppression ?');">&times;</a></span>
-                <h4><a href="?p=articleBack&id={{article.id}}">{{ article.title }}</a></h4>
-                <p id="article_container" class="p_article">{{ article.content|u.truncate(300, '...')|raw }}</p>
+            <div class="title-back-container">
+                <h4 class="title_back">{{article.title}}</h4>
+            </div>
+            <div class="link-back">
+                <a class="btn-view" href="/articleBack/{{article.title|replace({' ' : '-'})}}/{{article.id}}"><i class="fas fa-eye"></i> Lire</a>
+                <a class="btn-write" href="/articleBackUpdate/{{article.id}}"><i class="fas fa-pen"></i> Modifier</a>
+                <a class="btn-delete" href="/deleteArticle/{{article.id}}" onclick="return confirm('Voulez-vous vraiment supprimer l'article {{article.title}} ?');"><i class="fas fa-trash-alt"></i> Supprimer</a>
+            </div>
             </div>
         </div>
-
     {% endfor %}
 
-    <nav aria-label="...">
-        <ul class="pagination pagination-lg justify-content-center">
+    </div>
+
+    {#-- PAGINATION --#}
+    <nav aria-label="..." class="nav-pagination">
+        <ul class="home_pagination">
             {% for i in 1..nbPages %}
-            <li class="page-item {% if i == page %}active{% endif %}"><a class="page-link" href="?p=homeBack&page={{i}}">{{i}}</a></li>
+            <li class="page-item {% if i == page %}active{% endif %}"><a class="page-link" href="/homeBack/{{i}}">{{i}}</a></li>
             {% endfor %}
         </ul>
     </nav>
 
-    </div>
+{#-- FONCTION TWIG SUPPRESSION VARIABLE MESSAGE FLASH --#}
+{{flashMessage()}}
 
 {% endblock %}

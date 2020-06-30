@@ -16,7 +16,7 @@ class ArticleRepository extends EntityRepository
 
         $queryBuilder->select('a')
                     ->from(Article::class, 'a')
-                    ->orderBy('a.id', 'DESC')
+                    ->orderBy('a.createdAt', 'DESC')
                     ->setFirstResult($firstResult) //offset
                     ->setMaxResults($maxResults); // limit
         
