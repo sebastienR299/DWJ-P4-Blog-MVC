@@ -3,7 +3,6 @@
 
 namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
-use App\Repository\ArticleRepository;
 use Doctrine\ORM\Mapping\{Column,Entity,Id,ManyToOne,OneToMany};
 
 // (repositoryClass="App\Repository\ArticleRepository")

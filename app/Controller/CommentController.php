@@ -39,13 +39,13 @@ class CommentController extends Controller
 
             $_SESSION['flash'] = "Votre commentaire à bien été ajouté";
             $_SESSION['color'] = "success";
-            header('Location: ?p=article&id=' . $article->getId() . '#write-comment');
+            header('Location: /article/' . $article->getId() . '/#write-comment');
         }
         else
         {
             $_SESSION['flash'] = "Veuillez saisir un message";
             $_SESSION['color'] = "danger";
-            header('Location: ?p=article&id=' . $article->getId() . '#write-comment');
+            header('Location: /article/' . $article->getId() . '/#write-comment');
         }
         
     }
@@ -68,7 +68,7 @@ class CommentController extends Controller
 
         $_SESSION['flash'] = "Le commentaire a bien été signaler";
         $_SESSION['color'] = "info";
-        header('Location: ?p=article&id=' . $article->getId());
+        header('Location: /article/' . $article->getId());
     }
 
     /**
@@ -103,7 +103,7 @@ class CommentController extends Controller
 
         $_SESSION['flash'] = 'Le commentaire à bien été validé';
         $_SESSION['color'] = 'success';
-        header('Location: ?p=viewReportComment');
+        header('Location: /viewReportComment');
     }
 
     /**
@@ -121,7 +121,7 @@ class CommentController extends Controller
 
         $_SESSION['flash'] = 'Le commentaire à bien été supprimé';
         $_SESSION['color'] = 'success';
-        header('Location: ?p=viewReportComment');
+        header('Location: /viewReportComment');
     }
 
 }

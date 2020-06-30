@@ -36,12 +36,16 @@ class ArticleController extends Controller
 
         // Calcule du nombre de page en fonction du nombre d'article
         $nbPages = ceil($nbArticles/$perPage);
-
+        if($page > $nbPages) {
+            header('Location: /home/1');
+            $_SESSION['flash'] = "Désolé cette page n'existe pas";
+            $_SESSION['color'] = "danger";
+        } else {
         if ($isAdmin === false)
         {
             echo $this->twig->render('home.front.twig', [
                 'articles' => $articles,
-                'users' => $users,
+                // 'users' => $users,
                 'nbPages' => $nbPages,
                 'page' => $page
             ]);
@@ -59,7 +63,9 @@ class ArticleController extends Controller
                 'nbPages' => $nbPages,
                 'page' => $page
             ]);
+        
         }
+    }
     }
 
     /**
@@ -71,30 +77,42 @@ class ArticleController extends Controller
      */
     public function getArticle(int $articleId, $isAdmin = false)
     {
+
         $article = $this->articleRepository->findBy(['id' => $articleId]);
         $comments = $this->commentRepository->findBy(["article" => $articleId]);
         $user = $this->userRepository->findBy(['id' => $articleId]);
+        $title = $this->articleRepository->find($articleId);
 
-        $_SESSION['returnMessage'] = '';
-        $_SESSION['colorMessage'] = '';
+        if(is_null($title)) {
+            header('Location: /home/1');
+            $_SESSION['flash'] = "Désolé la page demandée n'existe pas";
+            $_SESSION['color'] = "danger";
+        } else {
 
-        if ($isAdmin === false)
-        {
-            echo $this->twig->render('article.front.twig', [
-                'article' => $article,
-                'comments' => $comments,
-                'users' => $user
-            ]);
+            $titleName = $title->getTitle();
+
+            if ($isAdmin === false)
+            {
+                echo $this->twig->render('article.front.twig', [
+                    'article' => $article,
+                    'comments' => $comments,
+                    'users' => $user,
+                    'title' => $titleName
+                    ]);    
+                
+            }
+            else
+            {
+                echo $this->twig->render('article.back.twig', [
+                    'article' => $article,
+                    'comments' => $comments,
+                    'users' => $user,
+                    'title' => $titleName
+                ]);
+            }
         }
-        else
-        {
-            echo $this->twig->render('article.back.twig', [
-                'article' => $article,
-                'comments' => $comments,
-                'users' => $user
-            ]);
-        } 
     }
+    
 
     /**
      * Retourne la vue pour la création d'un article
@@ -131,7 +149,6 @@ class ArticleController extends Controller
             {
    
                     if(move_uploaded_file($file_tmp_name, $target_file)) {
-                        echo "Fichier envoyé avec succès";
                     }
 
                 $article = new Article();
@@ -265,6 +282,10 @@ class ArticleController extends Controller
                 $_SESSION['color'] = 'danger';
                 header('Location: ?p=articleBack&id=' . $article->getId());
             }
+    }
+
+    public function error404 () {
+        echo $this->twig->render('error404.twig', []);
     }
 
 }
